@@ -4,6 +4,7 @@ from helper import get_recent_submission, Endpoint
 app = Flask(__name__)
 app.config['JSON_AS_ASCII'] = False
 
+
 @app.route('/recent-submissions', methods=['GET'])
 def get_recent_submissions():
     '''get recent submissions

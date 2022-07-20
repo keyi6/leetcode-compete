@@ -1,0 +1,11 @@
+version: '3'
+
+services:
+    flask:
+        container_name: leetcode-compete-server
+        restart: unless-stopped
+        build:
+            context: server
+            dockerfile: Dockerfile
+        ports:
+            - "$server_port:5000"
