@@ -8,7 +8,7 @@ export const WatchList: React.FC<IWatchListProps> = (props: IWatchListProps) => 
     return (
         <ul>
             <p>watch list</p>
-            {props.watchList.map(({ username, endpoint }) => (<li>username: {username}, endpoint: {endpoint}</li>))}
+            {props.watchList.map(({ username, endpoint }) => (<li key={`watch-list-${username}-${endpoint}`}>{username}@{endpoint}</li>))}
         </ul>
     );
 }

@@ -1,9 +1,9 @@
 import React from 'react';
 
-export const Home: React.FC = () => {
+export const Summary: React.FC = () => {
     return (
         <div>
-            home
+            summary
         </div>
     );
 };

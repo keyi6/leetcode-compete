@@ -1,6 +1,8 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Home } from './home';
+import { Sharing } from './sharing';
+import { Summary } from './summary';
 
 interface IPageConfig {
     path: string;
@@ -9,14 +11,17 @@ interface IPageConfig {
 
 const PAGE_CONFIGS: IPageConfig[] = [
     {
-        path: '/',
-        element: <Home />,
+        path: '/sharing',
+        element: <Sharing />,
     },
     {
-        path: '/stats',
-        // TODO: build stats page
-        element: <p>stats</p>,
-    }
+        path: '/summary',
+        element: <Summary />
+    },
+    {
+        path: '/',
+        element: <Home />
+    },
 ];
 
 export const Router = () => (
