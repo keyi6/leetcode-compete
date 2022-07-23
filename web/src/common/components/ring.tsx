@@ -47,13 +47,13 @@ export const Ring: React.FC<IRingProps> = (props) => {
         <RingWrapper style={{ height: size, width: size }}>
             {[
                 { strokeWidth: 4, scale: 1 },
-                { strokeWidth: 6, scale: 0.7 },
+                { strokeWidth: 5, scale: 0.7 },
                 { strokeWidth: 10, scale: 0.4 },
             ].map(({ strokeWidth, scale }, index) => (
                 <g className={`ring ring${index}`} style={{ transform: `scale(${scale}) rotate(-90deg)` }} key={`ring-${index}`}>
                     <circle strokeWidth={strokeWidth} r="15.915" cx="50%" cy="50%" className="background" />
                     <circle strokeWidth={strokeWidth} r="15.915" cx="50%" cy="50%" className="completed"
-                        strokeDasharray={`${props.percentage[index]}, 100`} />
+                        strokeDasharray={`${Math.max(props.percentage[index], 1)}, 100`} />
                 </g>
             ))}
         </RingWrapper>

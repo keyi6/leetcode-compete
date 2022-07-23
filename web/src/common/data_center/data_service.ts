@@ -1,7 +1,7 @@
 import { StorageKey } from './storage_key';
 import { ISubmission } from '../services';
 import { IStorage, LocalStorage } from './storage';
-import { IUser } from '../interfaces';
+import { ICompetitionInfo, IUser } from '../interfaces';
 
 export class DataService {
     private storage: IStorage;
@@ -19,13 +19,13 @@ export class DataService {
         return JSON.parse(v || '[]') as IUser[];
     }
 
-    public async setCompeteList(users: IUser[]): Promise<void> {
-        return this.storage.set(StorageKey.COMPETE_LIST, users);
+    public async setCompeteList(info: ICompetitionInfo[]): Promise<void> {
+        return this.storage.set<ICompetitionInfo[]>(StorageKey.COMPETE_LIST, info);
     }
 
-    public async getCompeteList(): Promise<IUser[]> {
+    public async getCompeteList(): Promise<ICompetitionInfo[]> {
         const v = await this.storage.get(StorageKey.COMPETE_LIST); 
-        return JSON.parse(v || '[]') as IUser[];
+        return JSON.parse(v || '[]') as ICompetitionInfo[];
     }
 
     public async setMyUserInfo(user: IUser): Promise<void> {

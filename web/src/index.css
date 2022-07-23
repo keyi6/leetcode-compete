@@ -8,8 +8,22 @@ body {
     margin: 0;
     background-color: #000000;
     color: #ffffff;
+
+    padding: 20px;
 }
 
 * {
     box-sizing: border-box;
+}
+
+h1 {
+    font-size: 3rem
+}
+
+h2 {
+    font-size: 2.5rem;
+}
+
+h3 {
+    font-size: 2.2rem;
 }

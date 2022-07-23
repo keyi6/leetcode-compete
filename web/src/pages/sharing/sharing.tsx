@@ -2,6 +2,7 @@ import React, { useCallback, useState } from 'react';
 import { DataCenter, Endpoint, useCompeteListData, useWatchListData, VerticalFlex } from '../../common';
 import { WatchList } from './watch_list';
 import { CompeteList } from './compete_list';
+import { Add } from './add';
 
 export const Sharing: React.FC = () => {
     const dataCenter = DataCenter.getInstance();
@@ -19,11 +20,15 @@ export const Sharing: React.FC = () => {
 
 
     return (
-        <VerticalFlex>
-            <h1>Sharing</h1>
+        <>
+            <VerticalFlex>
+                <h1>Sharing</h1>
 
-            <CompeteList competeList={competeList} />
-            <WatchList watchList={watchList} />
-        </VerticalFlex>
+                <CompeteList competeList={competeList} />
+                <WatchList watchList={watchList} />
+            </VerticalFlex>
+
+            <Add />
+        </>
     );
 };

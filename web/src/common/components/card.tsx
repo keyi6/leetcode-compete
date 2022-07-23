@@ -2,7 +2,7 @@ import React, { PropsWithChildren } from 'react';
 import styled from 'styled-components';
 
 const CardWrapper = styled.div`
-    background-color: rgb(21, 21, 22);
+    background-color: rgb(33, 33, 35);
     padding: 20px;
     border-radius: 10px;
     font-size: 1.1rem;
