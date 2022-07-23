@@ -1,4 +1,4 @@
-import { Endpoint } from './constants';
+import { Endpoint } from '../constants';
 
 export interface IUser {
     endpoint: Endpoint;

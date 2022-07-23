@@ -1,4 +1,4 @@
-import { IUser } from '../user.interface';
+import { IUser } from '../interfaces';
 
 export interface ISubmission {
     timestamp: number;

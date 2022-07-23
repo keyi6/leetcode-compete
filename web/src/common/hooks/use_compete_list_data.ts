@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { DataCenter } from '../data_center';
-import { IUser } from '../user.interface';
+import { IUser } from '../interfaces';
 
 export function useCompeteListData() {
     const [competeList, setCompeteList] = useState<IUser[]>([]);

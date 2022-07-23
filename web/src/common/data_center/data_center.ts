@@ -1,7 +1,8 @@
 import { getRecentSubmissions } from '../services';
-import { IUser } from '../user.interface';
+import { IUser } from '../interfaces';
 import { DataService } from './data_service';
-import union from 'lodash/union';
+import unionWith from 'lodash/unionWith';
+import isEqual from 'lodash/isEqual';
 
 export class DataCenter {
     // singleton implementation 
@@ -29,13 +30,13 @@ export class DataCenter {
         if (!submissions) return;
 
         const prevSubmissions = await this.service.getUserSubmissions(user);
-        await this.service.setUserSubmissions(user, union(prevSubmissions, submissions));
+        await this.service.setUserSubmissions(user, unionWith(prevSubmissions, submissions, isEqual));
     }
 
     private async updateAllUsersSubmissions() {
         const watchList = await this.service.getWatchList();
         const competeList = await this.service.getCompeteList();
-        union(watchList, competeList).forEach(async (user: IUser) => await this.updateSubmissions(user));
+        unionWith(watchList, competeList, isEqual).forEach(async (user: IUser) => await this.updateSubmissions(user));
     }
 
     public async addUserToWatchList(user: IUser) {
@@ -65,5 +66,14 @@ export class DataCenter {
 
     public async getCompeteList(): Promise<IUser[]> {
         return this.service.getCompeteList();
+    }
+
+    public async getUserRecentSubmission(user: IUser) {
+        return this.service.getUserSubmissions(user);
+    }
+
+    public async getGoal() {
+        // TODO: read it from local storage or whatever
+        return Promise.resolve(5);
     }
 }

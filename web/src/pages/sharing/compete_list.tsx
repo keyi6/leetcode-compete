@@ -1,4 +1,4 @@
-import { IUser } from '../../common';
+import { Card, CardList, IUser } from '../../common';
 
 export interface ICompeteListProps {
     competeList: IUser[];
@@ -6,9 +6,14 @@ export interface ICompeteListProps {
 
 export const CompeteList: React.FC<ICompeteListProps> = (props: ICompeteListProps) => {
     return (
-        <ul>
-            <p>compete list</p>
-            {props.competeList.map(({ username, endpoint }) => (<li>username: {username}, endpoint: {endpoint}</li>))}
-        </ul>
+        <CardList>
+            <h2>competitions</h2>
+
+            {props.competeList.map(({ username, endpoint }) => (
+                <Card>
+                    username: {username}, endpoint: {endpoint}
+                </Card>
+            ))}
+        </CardList>
     );
 }
