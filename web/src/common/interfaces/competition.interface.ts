@@ -3,12 +3,13 @@ import { IUser } from './user.interface';
 export interface ICompetitionInfo {
     competitionId: string;
     startTime: number;
-    me: IUser;
-    opponent: IUser;
+    participants: IUser[];
 }
 
 export interface ICompetitionStatus extends ICompetitionInfo {
     daysLeft: number;
-    myScores: number[];
-    opponentsScores: number[];
+    status: ({
+        user: IUser;
+        scores: number[];
+    })[];
 }

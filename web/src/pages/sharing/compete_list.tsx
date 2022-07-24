@@ -1,9 +1,10 @@
-import { useMemo } from 'react';
 import styled from '@emotion/styled';
 import {
     Card, CardList, Color, DataCenter, HorizontalFlex, ICompetitionInfo, ICompetitionStatus,
     useAsyncMemo, VerticalFlex,
 } from '../../common';
+import { useNavigate } from 'react-router-dom';
+import { useMemo } from 'react';
 
 function sum(arr: number[]): number {
     return arr.reduce((prev, cur) => prev + cur, 0);
@@ -46,26 +47,22 @@ const CompeteListItem: React.FC<ICompetitionInfo> = ({ competitionId }) => {
         async () => DataCenter.getInstance().getCompetitionStatus(competitionId),
         undefined,
     );
-    const myScore = useMemo(() => sum(info?.myScores || []), [info]);
-    const opponentsScore = useMemo(() => sum(info?.opponentsScores || []), [info]);
+    const status = useMemo(() => {
+        const temp = (info?.status || []).map(({ user, scores }) => ({
+            name: user.username,
+            totalScore: sum(scores),
+            todayScore: getLast(scores),
+        }));
+        const max = temp.reduce((prev, cur) => Math.max(prev, cur.totalScore), 0);
+        return temp.map(t => ({ ...t, isWinning: max === t.totalScore }));
+    }, [info]);
+
+    const nav = useNavigate();
 
     return !info ? null : (
-        <Card>
+        <Card onClick={() => nav(`/competition/${info.competitionId}`)}>
             <HorizontalFlex>
-                {[
-                    {
-                        name: info.opponent.username,
-                        totalScore: opponentsScore,
-                        todayScore: getLast(info.opponentsScores),
-                        isWinning: opponentsScore >= myScore,
-                    },
-                    {
-                        name: 'Me',
-                        totalScore: myScore,
-                        todayScore: getLast(info.myScores),
-                        isWinning: myScore >= opponentsScore,
-                    },
-                ].map(({ name, todayScore, totalScore, isWinning }) => (
+                {status.map(({ name, todayScore, totalScore, isWinning }) => (
                     <VerticalFlex key={`compete-list-item-${info.competitionId}-${name}`}
                         style={{ display: 'inline-flex', paddingRight: 20, color: isWinning ? Color.GOLD : Color.GOLD_LIGHT }}
                     >

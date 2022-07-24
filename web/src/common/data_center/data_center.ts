@@ -2,9 +2,10 @@ import { getRecentSubmissions, ISubmission } from '../services';
 import { ICompetitionInfo, ICompetitionStatus, IUser, IUserDailyStatus } from '../interfaces';
 import { DataService } from './data_service';
 import unionWith from 'lodash/unionWith';
+import uniq from 'lodash/uniq';
+import flatten from 'lodash/flatten';
 import isEqual from 'lodash/isEqual';
 import { calcDailyScore, getDaysTimestampSince, getMidNightTimestamp, ONE_DAY } from '../utils';
-import { uniq } from 'lodash';
 
 export class DataCenter {
     // singleton implementation 
@@ -37,8 +38,8 @@ export class DataCenter {
 
     private async updateAllUsersSubmissions() {
         const watchList = await this.service.getWatchList();
-        const competeList = (await this.service.getCompeteList()).map(c => c.opponent);
-        unionWith(watchList, competeList, isEqual)
+        const competeList = (await this.service.getCompeteList()).map(c => c.participants);
+        unionWith(watchList, flatten(competeList), isEqual)
             .filter(u => !!u)
             .forEach(async (user: IUser) => await this.updateSubmissions(user));
     }
@@ -53,19 +54,17 @@ export class DataCenter {
 
     public async addUserToCompeteList(user: IUser): Promise<void> {
         const competeList = await this.service.getCompeteList();
-        // if opponent is already in a competition, ignore
-        if (competeList.find(u => u.opponent.username === user.username && u.opponent.endpoint === user.endpoint)) {
-            return Promise.reject('You are already in one competition');
-        }
 
         await this.updateSubmissions(user);
         const me = await this.service.getMyUserInfo();
+        const startTime = getMidNightTimestamp(Date.now() + ONE_DAY);
+
+        const competitionId = 'foo';
 
         await this.service.setCompeteList([...competeList, {
-            opponent: user,
-            me, 
-            startTime: getMidNightTimestamp(Date.now() + ONE_DAY),
-            competitionId: Math.random().toString(36).substring(2, 10),
+            participants: [me, user],
+            startTime,
+            competitionId,
         }]);
     }
 
@@ -96,22 +95,20 @@ export class DataCenter {
         const competition = allCompetitions.find(c => c.competitionId === competitionId);
         if (!competition) return;
 
-        const mySubmissions = await this.service.getUserSubmissions(competition.me);
-        const opponentsSubmissions = await this.service.getUserSubmissions(competition.opponent);
         const days = getDaysTimestampSince(competition.startTime);
 
         const filterDailySubmissions = (ts: number, allSubmissions: ISubmission[]) => 
             allSubmissions.filter(s => ts <= s.timestamp && s.timestamp <= ts + ONE_DAY);
-
-        const myScores = days.map(ts => filterDailySubmissions(ts, mySubmissions))
-            .map(calcDailyScore);
-        const opponentsScores = days.map(ts => filterDailySubmissions(ts, opponentsSubmissions))
-            .map(calcDailyScore);
+        
+        const status = await Promise.all(competition.participants.map(async (user) => {
+            const submissions = await this.service.getUserSubmissions(user);
+            const scores = days.map(ts => filterDailySubmissions(ts, submissions)).map(calcDailyScore);
+            return { scores, user };
+        }));
         
         return {
             ...competition,
-            myScores,
-            opponentsScores,
+            status,
             daysLeft: Math.floor((getMidNightTimestamp(Date.now()) - competition.startTime) / ONE_DAY),
         };
     }

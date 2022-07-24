@@ -5,6 +5,7 @@ import { Setup } from './setup';
 import { Sharing } from './sharing';
 import { Summary } from './summary';
 import { User } from './user';
+import { Competition } from './competition';
 
 interface IPageConfig {
     path: string;
@@ -31,6 +32,10 @@ const PAGE_CONFIGS: IPageConfig[] = [
     {
         path: '/user/:username/:endpoint/:timestamp',
         element: <User />
+    },
+    {
+        path: '/competition/:competitionId',
+        element: <Competition />
     },
     {
         path: '/',

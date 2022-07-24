@@ -31,7 +31,7 @@ export const User: React.FC = () => {
         });
 
         DataCenter.getInstance().getCompeteList().then(comps => {
-            if (comps.find(u => u.opponent.username === username && u.opponent.endpoint === endpoint)) {
+            if (comps.find(us => us.participants.find(u => u.username === username && u.endpoint === endpoint))) {
                 setCanCompete(false);
             }
         });
