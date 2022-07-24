@@ -1,20 +1,21 @@
-import React from 'react';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { Router } from './pages';
+import { Color } from './common';
 
-const darkTheme = createTheme({
+const theme = createTheme({
     palette: {
         mode: 'dark',
         primary: {
-            main: '#48e101',
+            main: Color.GREEN,
+        },
+        secondary: {
+            main: Color.RED,
         },
     },
 });
 
-export function App() {
-    return (
-        <ThemeProvider theme={darkTheme}>
-            <Router />
-        </ThemeProvider>
-    );
-}
+export const App = () => (
+    <ThemeProvider theme={theme}>
+        <Router />
+    </ThemeProvider>
+);

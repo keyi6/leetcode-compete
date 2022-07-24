@@ -15,7 +15,6 @@ export const Card= styled.div`
     }
 
     &:active {
-        // TODO: color adjust
         background-color: #222;
     }
 
