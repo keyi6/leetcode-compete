@@ -3,12 +3,16 @@ import TextField from '@mui/material/TextField';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import Link from '@mui/material/Link';
-import Button from '@mui/material/Button';
+import LoadingButton from '@mui/lab/LoadingButton';
+import Alert from '@mui/material/Alert';
 import { HorizontalFlex, VerticalFlex } from './flex';
 import { Endpoint } from '../constants';
+import { getRecentSubmissions } from '../services';
+import { IUser } from '../interfaces';
 
 export interface IUserProps {
     buttonWording?: string;
+    onClickCallback: (userInfo: IUser) => Promise<void>;
 }
 
 export const User: React.FC<IUserProps> = (props) => {
@@ -18,6 +22,22 @@ export const User: React.FC<IUserProps> = (props) => {
         () => `https://www.leetcode.${endpoint === Endpoint.CN ? 'cn' : 'com'}/u/${username}`,
         [username, endpoint],
     );
+    const [loading, setLoading] = useState<boolean>(false);
+    const [err, setErr] = useState<string>('');
+
+    const handleClick = async () => {
+        setLoading(true);
+        const user = { username, endpoint };
+        try {
+            const submissions = await getRecentSubmissions(user);
+            await props.onClickCallback(user);
+        } catch (err) {
+            setErr(JSON.stringify(err));
+            setLoading(false);
+            return;
+        }
+        setLoading(false);
+    };
 
     return (
         <VerticalFlex style={{ gap: 30 }}>
@@ -40,9 +60,15 @@ export const User: React.FC<IUserProps> = (props) => {
                 </div>
             )}
 
-            <Button variant="contained" disabled={!username}>
+            <LoadingButton variant="contained" disabled={!username} onClick={handleClick} loading={loading}>
                 {props.buttonWording || 'Add to watch list'}
-            </Button>
+            </LoadingButton>
+
+            {err && 
+                <Alert severity="error" onClose={() => {}}>
+                    Failed to fetch user info from <Link>{link}</Link>. Please check again. Detail: {err}
+                </Alert>
+            }
         </VerticalFlex>
     );
 };

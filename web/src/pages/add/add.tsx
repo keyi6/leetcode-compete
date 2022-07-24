@@ -1,11 +1,12 @@
 import React from 'react';
-import TextField from '@mui/material/TextField';
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
-import { User, VerticalFlex } from '../../common';
+import { DataCenter, IUser, User } from '../../common';
 
 export const Add: React.FC = () => {
+    const onAddUser = async (user: IUser) => {
+        return DataCenter.getInstance().addUserToWatchList(user);
+    };
+
     return (
-        <User />
+        <User onClickCallback={onAddUser} />
     );
 };
