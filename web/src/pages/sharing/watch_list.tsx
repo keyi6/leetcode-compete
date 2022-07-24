@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import styled from 'styled-components';
+import styled from '@emotion/styled';
 import { Card, CardList, Color, DataCenter, getPastDaysTimestamp, HorizontalFlex, IUser, Ring, useAsyncMemo, VerticalFlex } from '../../common';
 
 export interface IWatchListProps {

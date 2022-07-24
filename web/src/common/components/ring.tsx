@@ -1,5 +1,6 @@
 import React from 'react';
-import styled,  { keyframes } from 'styled-components';
+import styled from '@emotion/styled';
+import { keyframes } from '@emotion/react';
 import { Color } from '../constants';
 import { Px } from '../interfaces';
 
@@ -8,7 +9,7 @@ const ringProgress = keyframes`
 `;
 
 
-const RingWrapper = styled.svg.attrs({viewBox: '0 0 37 37'})`
+const RingWrapper = styled.svg`
     .ring {
         transform-origin: 50%;
     }
@@ -44,7 +45,7 @@ export const Ring: React.FC<IRingProps> = (props) => {
     const size = props.size || 64;
 
     return (
-        <RingWrapper style={{ height: size, width: size }}>
+        <RingWrapper style={{ height: size, width: size }} viewBox="0 0 37 37">
             {[
                 { strokeWidth: 4, scale: 1 },
                 { strokeWidth: 5, scale: 0.7 },
