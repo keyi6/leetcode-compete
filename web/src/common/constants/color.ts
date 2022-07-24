@@ -1,3 +1,4 @@
+// TODO: put colors in theme
 export enum Color {
     RED =  'rgb(202, 18, 52)',
     GREEN =  'rgb(71, 225, 1)',

@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { Add } from './add';
 import { Home } from './home';
 import { Sharing } from './sharing';
 import { Summary } from './summary';
@@ -17,6 +18,10 @@ const PAGE_CONFIGS: IPageConfig[] = [
     {
         path: '/summary',
         element: <Summary />
+    },
+    {
+        path: '/add',
+        element: <Add />
     },
     {
         path: '/',
