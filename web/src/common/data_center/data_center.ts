@@ -109,7 +109,7 @@ export class DataCenter {
         return {
             ...competition,
             status,
-            daysLeft: Math.floor((getMidNightTimestamp(Date.now()) - competition.startTime) / ONE_DAY),
+            daysLeft: 7 - Math.floor((getMidNightTimestamp(Date.now()) - competition.startTime) / ONE_DAY),
         };
     }
 

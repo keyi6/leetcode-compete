@@ -7,15 +7,20 @@ export function getMidNightTimestamp(timestamp: number) {
 }
 
 /**
- * get past days' timestamp array
- * @param pastDaysCount {number} if pass 5, it will return past 5 days' timestamps at midnight
+ * get past or future days' timestamp array
+ * @param daysCount {number} if pass 5, it will return past/future 5 days' timestamps at midnight
+ * @param direction {'past'|'future'} default if future
  * @returns in milliseconds
  */
-export function getPastDaysTimestamp(pastDaysCount: number): number[] {
-    const today = getMidNightTimestamp(Date.now());
-    return new Array(pastDaysCount)
+export function getAdjacentDaysTimestamp(
+    daysCount: number,
+    direction: 'past' | 'future' = 'past',
+    startTime = Date.now(),
+): number[] {
+    const s = getMidNightTimestamp(startTime);
+    return new Array(daysCount)
         .fill(0)
-        .map((_, index) => (today - index * ONE_DAY));
+        .map((_, index) => (s + index * ONE_DAY * (direction === 'past' ? -1 : 1)));
 }
 
 

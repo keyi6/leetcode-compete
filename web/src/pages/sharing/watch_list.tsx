@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from '@emotion/styled';
-import { Card, CardList, Color, DataCenter, getPastDaysTimestamp, HorizontalFlex, IUser, IUserDailyStatus, Ring, toQuerystring, useAsyncMemo, VerticalFlex } from '../../common';
+import { Card, CardList, Color, DataCenter, getAdjacentDaysTimestamp, HorizontalFlex, IUser, IUserDailyStatus, Ring, toQuerystring, useAsyncMemo, VerticalFlex } from '../../common';
 
 export interface IWatchListProps {
     watchList: IUser[];
@@ -57,7 +57,7 @@ const DailyWatchList: React.FC<IWatchListProps & { timestamp: number }> = (props
 };
 
 export const WatchList: React.FC<IWatchListProps> = (props: IWatchListProps) => {
-    const past5Days = useMemo<number[]>(() => getPastDaysTimestamp(5), []);
+    const past5Days = useMemo<number[]>(() => getAdjacentDaysTimestamp(5, 'past'), []);
 
     return (
         <>
