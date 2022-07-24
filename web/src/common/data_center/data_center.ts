@@ -55,7 +55,7 @@ export class DataCenter {
         const competeList = await this.service.getCompeteList();
         // if opponent is already in a competition, ignore
         if (competeList.find(u => u.opponent.username === user.username && u.opponent.endpoint === user.endpoint)) {
-            return;
+            return Promise.reject('You are already in one competition');
         }
 
         await this.updateSubmissions(user);
@@ -72,6 +72,10 @@ export class DataCenter {
     public async setMyUserInfo(user: IUser) {
         await this.updateSubmissions(user);
         await this.service.setMyUserInfo(user);
+    }
+
+    public async getMyUserInfo(): Promise<IUser> {
+        return this.service.getMyUserInfo();
     }
 
     public async getWatchList(): Promise<IUser[]> {

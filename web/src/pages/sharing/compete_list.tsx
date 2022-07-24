@@ -1,8 +1,7 @@
 import { useMemo } from 'react';
 import styled from '@emotion/styled';
 import {
-    Card, CardList, Color, DataCenter, HorizontalFlex,
-    ICompetitionInfo, ICompetitionStatus, IUser,
+    Card, CardList, Color, DataCenter, HorizontalFlex, ICompetitionInfo, ICompetitionStatus,
     useAsyncMemo, VerticalFlex,
 } from '../../common';
 

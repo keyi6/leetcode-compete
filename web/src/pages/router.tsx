@@ -1,10 +1,10 @@
-import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Add } from './add';
 import { Home } from './home';
+import { Setup } from './setup';
 import { Sharing } from './sharing';
 import { Summary } from './summary';
-import { UserInfo } from './user';
+import { User } from './user';
 
 interface IPageConfig {
     path: string;
@@ -12,6 +12,10 @@ interface IPageConfig {
 }
 
 const PAGE_CONFIGS: IPageConfig[] = [
+    {
+        path: '/setup',
+        element: <Setup />,
+    },
     {
         path: '/sharing',
         element: <Sharing />,
@@ -26,7 +30,7 @@ const PAGE_CONFIGS: IPageConfig[] = [
     },
     {
         path: '/user/:username/:endpoint/:timestamp',
-        element: <UserInfo />
+        element: <User />
     },
     {
         path: '/',

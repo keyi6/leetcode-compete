@@ -1,16 +1,12 @@
-import React, { useState } from 'react';
-import { DataCenter, useCompeteListData, useWatchListData, VerticalFlex } from '../../common';
+import React from 'react';
+import { useCompeteListData, useWatchListData, VerticalFlex } from '../../common';
 import { WatchList } from './watch_list';
 import { CompeteList } from './compete_list';
-import { Add } from './add';
+import { AddUser } from './add_user';
 
 export const Sharing: React.FC = () => {
-    const dataCenter = DataCenter.getInstance();
-
-    const [name, setName] = useState<string>('');
-
-    const { watchList, setWatchList } = useWatchListData();
-    const { competeList, setCompeteList } = useCompeteListData();
+    const { watchList } = useWatchListData();
+    const { competeList } = useCompeteListData();
 
     return (
         <>
@@ -21,7 +17,7 @@ export const Sharing: React.FC = () => {
                 <WatchList watchList={watchList} />
             </VerticalFlex>
 
-            <Add />
+            <AddUser />
         </>
     );
 };

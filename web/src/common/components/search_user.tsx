@@ -12,10 +12,10 @@ import { IUser } from '../interfaces';
 
 export interface IUserProps {
     buttonWording?: string;
-    onClickCallback: (userInfo: IUser) => Promise<void>;
+    onClick: (userInfo: IUser) => Promise<void>;
 }
 
-export const User: React.FC<IUserProps> = (props) => {
+export const SearchUser: React.FC<IUserProps> = (props) => {
     const [username, setUsername] = useState<string>('');
     const [endpoint, setEndpoint] = useState<Endpoint>(Endpoint.CN);
     const link = useMemo(
@@ -30,7 +30,7 @@ export const User: React.FC<IUserProps> = (props) => {
         const user = { username, endpoint };
         try {
             const submissions = await getRecentSubmissions(user);
-            await props.onClickCallback(user);
+            await props.onClick(user);
         } catch (err) {
             setErr(JSON.stringify(err));
             setLoading(false);

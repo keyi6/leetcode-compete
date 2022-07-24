@@ -1,15 +1,14 @@
+import React, { useEffect, useState } from 'react';
 import styled from '@emotion/styled';
 import Button from '@mui/material/Button';
-import Divider from '@mui/material/Divider';
-import React from 'react';
 import { useParams } from 'react-router-dom';
-import { Color, DataCenter, Endpoint, HorizontalFlex, IUser, IUserDailyStatus, Ring, useAsyncMemo, VerticalFlex } from '../../common';
+import { Color, DataCenter, Endpoint, IUser, IUserDailyStatus, Ring, useAsyncMemo, VerticalFlex } from '../../common';
 
 const Number = styled.div`
     color: ${Color.RED};
 `;
 
-export const UserInfo: React.FC = () => {
+export const User: React.FC = () => {
     const { endpoint, username, timestamp } = useParams();
     const user: IUser = {
         username: username || '',
@@ -23,22 +22,37 @@ export const UserInfo: React.FC = () => {
         [endpoint, username],
     );
 
+    const [canCompete, setCanCompete] = useState<boolean>(true);
+    useEffect(() => {
+        DataCenter.getInstance().getMyUserInfo().then(me => {
+            if (username === me.username && endpoint === me.endpoint) {
+                setCanCompete(false);
+            }
+        });
+
+        DataCenter.getInstance().getCompeteList().then(comps => {
+            if (comps.find(u => u.opponent.username === username && u.opponent.endpoint === endpoint)) {
+                setCanCompete(false);
+            }
+        });
+    });
+
+    const onClick = async () => {
+        await DataCenter.getInstance().addUserToCompeteList(user);
+        setCanCompete(false);
+    };
+
     return (
         <VerticalFlex>
-            <h1>{username}</h1>
+            <h1 style={{ margin: 0 }}>{username}</h1>
+            <p>{new Date(ts).toDateString()}</p>
 
-            <HorizontalFlex style={{ alignItems: 'flex-start', justifyContent: 'space-between' }}>
-                {/* TODO: 3 rings stand for easy/hard/medium */}
-                <Ring percentage={[percentage, percentage, percentage]} size={200} />
-                <div>
-                    <p>{new Date(ts).toDateString()}</p>
-                    <Divider style={{ color: 'rgba(255,255,255,0.4)' }} />
-                </div>
-            </HorizontalFlex>
+            {/* TODO: 3 rings stand for easy/hard/medium */}
+            <Ring percentage={[percentage, percentage, percentage]} size={200} />
 
             <h3>submissions: <Number>{count}/{goal}</Number></h3>
 
-            <Button>Compete with {username}</Button>
+            <Button variant="contained" onClick={onClick} disabled={!canCompete}>Compete with {username}</Button>
         </VerticalFlex>
     );
 }
