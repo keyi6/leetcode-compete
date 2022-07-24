@@ -1,5 +1,5 @@
 import { getRecentSubmissions, ISubmission } from '../services';
-import { ICompetitionInfo, ICompetitionStatus, IUser } from '../interfaces';
+import { ICompetitionInfo, ICompetitionStatus, IUser, IUserDailyStatus } from '../interfaces';
 import { DataService } from './data_service';
 import unionWith from 'lodash/unionWith';
 import isEqual from 'lodash/isEqual';
@@ -82,20 +82,6 @@ export class DataCenter {
         return this.service.getCompeteList();
     }
 
-    /**
-     * get user's daily submissions unique count
-     * @param user {IUser}
-     * @param timestamp {number} timestamp (to milliseconds)
-     * @returns 
-     */
-    public async getUserDailySubmissionsCount(user: IUser, timestamp: number): Promise<number> {
-        const allSubmissions = await this.service.getUserSubmissions(user);
-        const q = allSubmissions
-            .filter(s => timestamp <= s.timestamp && s.timestamp <= timestamp + ONE_DAY)
-            .map(s => s.titleSlug);
-        return uniq(q).length;
-    }
-
     public async getGoal() {
         // TODO: read it from local storage or whatever
         return Promise.resolve(5);
@@ -123,6 +109,22 @@ export class DataCenter {
             myScores,
             opponentsScores,
             daysLeft: Math.floor((getMidNightTimestamp(Date.now()) - competition.startTime) / ONE_DAY),
+        };
+    }
+
+    public async getUserDailyStatus(user: IUser, timestamp: number): Promise<IUserDailyStatus> {
+        const allSubmissions = await this.service.getUserSubmissions(user);
+        const q = allSubmissions
+            .filter(s => timestamp <= s.timestamp && s.timestamp <= timestamp + ONE_DAY)
+            .map(s => s.titleSlug);
+        const count = uniq(q).length;
+
+        const goal = await this.getGoal();
+        const percentage = Math.round(count / goal * 100);
+        return {
+            percentage,
+            count,
+            goal,
         };
     }
 }

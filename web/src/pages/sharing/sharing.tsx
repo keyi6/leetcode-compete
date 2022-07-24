@@ -1,5 +1,5 @@
-import React, { useCallback, useState } from 'react';
-import { DataCenter, Endpoint, useCompeteListData, useWatchListData, VerticalFlex } from '../../common';
+import React, { useState } from 'react';
+import { DataCenter, useCompeteListData, useWatchListData, VerticalFlex } from '../../common';
 import { WatchList } from './watch_list';
 import { CompeteList } from './compete_list';
 import { Add } from './add';
@@ -11,13 +11,6 @@ export const Sharing: React.FC = () => {
 
     const { watchList, setWatchList } = useWatchListData();
     const { competeList, setCompeteList } = useCompeteListData();
-
-    const onSearchUser = useCallback(async () => {
-        await dataCenter.addUserToWatchList({ username: name, endpoint: Endpoint.CN });
-        const wl = await dataCenter.getWatchList();
-        setWatchList(wl);
-    }, [name]);
-
 
     return (
         <>

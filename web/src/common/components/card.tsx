@@ -1,16 +1,28 @@
 import React, { PropsWithChildren } from 'react';
 import styled from '@emotion/styled';
 
-const CardWrapper = styled.div`
+export const Card= styled.div`
     background-color: rgb(33, 33, 35);
     padding: 20px;
     border-radius: 10px;
     font-size: 1.1rem;
-`;
+    display: block;
+    width: 100%;
+    color: #fff;
 
-export const Card: React.FC<PropsWithChildren> = (props) => (
-    <CardWrapper>{props.children}</CardWrapper>
-);
+    &:hover {
+        cursor: pointer;
+    }
+
+    &:active {
+        // TODO: color adjust
+        background-color: #222;
+    }
+
+    & * {
+        pointer-events: none;
+    }
+`;
 
 
 const CardListWrapper = styled.div`

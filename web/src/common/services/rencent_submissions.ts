@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { IUser } from '../interfaces';
+import { toQuerystring } from '../utils';
 
 export interface ISubmission {
     timestamp: number;
@@ -7,6 +8,11 @@ export interface ISubmission {
     titleSlug: string;
 }
 
-export async function getRecentSubmissions({ username, endpoint }: IUser): Promise<ISubmission[]> {
-    return axios.get(`https://leetcode-compete.keyi-li.com/api/recent-submissions?u=${username}&ep=${endpoint}`);
+const HOST = 'https://leetcode-compete.keyi-li.com/api';
+
+export async function getRecentSubmissions(user: IUser): Promise<ISubmission[]> {
+    const res = await axios.get(`${HOST}/recent-submissions?${toQuerystring(user)}`);
+    if (res.status !== 200 || !res.data?.data?.recentAcSubmissionList) return Promise.reject(res);
+    return res.data.data.recentAcSubmissionList
+        .map((s: ISubmission) => ({ ...s, timestamp: s.timestamp * 1000 }));
 }

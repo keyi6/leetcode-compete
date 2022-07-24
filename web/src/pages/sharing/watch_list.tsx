@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styled from '@emotion/styled';
-import { Card, CardList, Color, DataCenter, getPastDaysTimestamp, HorizontalFlex, IUser, Ring, useAsyncMemo, VerticalFlex } from '../../common';
+import { Card, CardList, Color, DataCenter, getPastDaysTimestamp, HorizontalFlex, IUser, IUserDailyStatus, Ring, toQuerystring, useAsyncMemo, VerticalFlex } from '../../common';
 
 export interface IWatchListProps {
     watchList: IUser[];
@@ -17,15 +18,17 @@ const Number = styled.b`
 `;
 
 const WatchListItem: React.FC<IUser & { timestamp: number }> = ({ timestamp, ...user }) => {
-    const count = useAsyncMemo<number>(async () => 
-        (await DataCenter.getInstance().getUserDailySubmissionsCount(user, timestamp)),
-        0,
+    const { count, percentage, goal } = useAsyncMemo<IUserDailyStatus>(
+        () => DataCenter.getInstance().getUserDailyStatus(user, timestamp),
+        { percentage: 0, count: 0, goal: 5 },
     );
-    const goal = useAsyncMemo<number>(DataCenter.getInstance().getGoal, 3);
-    const percentage = useMemo(() => Math.round(count / goal * 100), [count, goal]);
+
+    const nav = useNavigate();
 
     return (
-        <Card>
+        <Card onClick={() => {
+            nav(`/user/${encodeURIComponent(user.username)}/${encodeURIComponent(user.endpoint)}/${timestamp}`);
+        }}>
             <HorizontalFlex>
                 {/* TODO: 3 rings stand for easy/hard/medium */}
                 <Ring percentage={[percentage, percentage, percentage]} />
@@ -36,7 +39,7 @@ const WatchListItem: React.FC<IUser & { timestamp: number }> = ({ timestamp, ...
                     <Number>{count}/{goal}</Number>
                 </VerticalFlex>
             </HorizontalFlex>
-        </Card >
+        </Card>
     )
 };
 

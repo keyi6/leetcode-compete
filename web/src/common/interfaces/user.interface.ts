@@ -4,3 +4,9 @@ export interface IUser {
     endpoint: Endpoint;
     username: string;
 }
+
+export interface IUserDailyStatus {
+    percentage: number;
+    count: number;
+    goal: number;
+}
