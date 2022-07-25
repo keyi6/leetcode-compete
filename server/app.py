@@ -5,6 +5,13 @@ app = Flask(__name__)
 app.config['JSON_AS_ASCII'] = False
 
 
+@app.route('/', methods=['GET'])
+def hello():
+    '''check if server is running
+    '''
+    return 'hello', 200
+
+
 @app.route('/recent-submissions', methods=['GET'])
 def get_recent_submissions():
     '''get recent submissions

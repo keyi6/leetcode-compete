@@ -16,7 +16,7 @@ step2. run the project in development mode
 ```sh
 python wsgi.py
 ```
-Open [http://localhost:5000](http://localhost:5000) to view it in the browser.
+Then you can run `curl http://localhost:5000/` to see if it says hello.
 
 
 ### deploy
