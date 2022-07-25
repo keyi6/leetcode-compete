@@ -1,5 +1,8 @@
-FROM python:3.9.13-alpine3.15
 WORKDIR /var/www/
+
+# install python
+RUN apk update
+RUN apk add --no-cache python3 py3-pip
 
 # create new user www
 ENV GROUP_ID=1000 \
