@@ -70,6 +70,7 @@ export class DataCenter {
 
     public async setMyUserInfo(user: IUser) {
         await this.updateSubmissions(user);
+        await this.addUserToWatchList(user);
         await this.service.setMyUserInfo(user);
     }
 
