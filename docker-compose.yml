@@ -1,11 +1,30 @@
 version: '3'
 
 services:
+    webserver:
+        container_name: leetcode-compete-webserver
+        restart: unless-stopped
+        build:
+            context: .
+            dockerfile: nginx/Dockerfile
+        ports:
+            - "$nginx_port:80"
+        networks:
+            - frontend
     flask:
-        container_name: leetcode-compete-server
+        container_name: leetcode-compete-api
         restart: unless-stopped
         build:
             context: server
             dockerfile: Dockerfile
         ports:
             - "$server_port:5000"
+        networks:
+            - frontend
+        depends_on:
+            - webserver
+
+
+networks:
+    frontend:
+        driver: bridge
