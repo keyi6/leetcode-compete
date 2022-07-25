@@ -8,6 +8,7 @@ const LoginGuide: React.FC = () => {
     return (
         <VerticalFlex>
             <h1>Welcome to Leetcode-Compete</h1>
+            <p>This page will use localstorage to save data. All it needs is usernames. No password required.</p>
             {/** TODO: add some intro */}
             <Button onClick={() => nav('/setup')} variant="contained">Go Setup</Button>
         </VerticalFlex>

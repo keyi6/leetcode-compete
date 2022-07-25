@@ -59,7 +59,7 @@ export class DataCenter {
         const me = await this.service.getMyUserInfo();
         const startTime = getMidNightTimestamp(Date.now() + ONE_DAY);
 
-        const competitionId = 'foo';
+        const competitionId = Math.random().toString(36).substring(2, 10);
 
         await this.service.setCompeteList([...competeList, {
             participants: [me, user],
