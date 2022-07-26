@@ -1,14 +1,13 @@
-from curses import REPORT_MOUSE_POSITION
 from enum import Enum
 from requests import post
-import constants
+import leetcode_helper.constants as constants
 
 class Endpoint(Enum):
     US = 'us'
     CN = 'cn'
 
 
-def _get_recent_submission_from_us_endpoint(username: str):
+def _get_recent_submissions_from_us_endpoint(username: str):
     response = post('https://leetcode.com/graphql/', json={
         'query': '''query recentAcSubmissions($username: String!, $limit: Int!) {
             recentAcSubmissionList(username: $username, limit: $limit) {
@@ -26,7 +25,7 @@ def _get_recent_submission_from_us_endpoint(username: str):
     return response.json(), response.status_code
 
 
-def _get_recent_submission_from_cn_endpoint(username: str):
+def _get_recent_submissions_from_cn_endpoint(username: str):
     response = post('https://leetcode.cn/graphql/noj-go/', json={
         'query': '''query recentAcSubmissions($userSlug: String!) {
             recentACSubmissions(userSlug: $userSlug) {
@@ -60,8 +59,8 @@ def _get_recent_submission_from_cn_endpoint(username: str):
     return content, response.status_code
 
 
-def get_recent_submission(username: str, endpoint: Endpoint):
+def get_recent_submissions(username: str, endpoint: Endpoint):
     if endpoint == Endpoint.CN:
-        return _get_recent_submission_from_cn_endpoint(username)
+        return _get_recent_submissions_from_cn_endpoint(username)
     if endpoint == Endpoint.US:
-        return _get_recent_submission_from_us_endpoint(username)
+        return _get_recent_submissions_from_us_endpoint(username)
