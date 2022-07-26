@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import styled from '@emotion/styled';
 import Button from '@mui/material/Button';
-import { useParams } from 'react-router-dom';
-import { Color, DataCenter, Endpoint, IUser, IUserDailyStatus, Ring, useAsyncMemo, VerticalFlex } from '../../common';
+import { useNavigate, useParams } from 'react-router-dom';
+import { Color, DataCenter, Endpoint, HorizontalFlex, IUser, IUserDailyStatus, Ring, useAsyncMemo, VerticalFlex } from '../../common';
 
 const Number = styled.div`
     color: ${Color.RED};
@@ -22,14 +22,13 @@ export const User: React.FC = () => {
         [endpoint, username],
     );
 
-    const [canCompete, setCanCompete] = useState<boolean>(true);
-    useEffect(() => {
-        DataCenter.getInstance().getMyUserInfo().then(me => {
-            if (username === me.username && endpoint === me.endpoint) {
-                setCanCompete(false);
-            }
-        });
+    const isMyself = useAsyncMemo(
+        async () => DataCenter.getInstance().getMyUserInfo().then(me => (username === me.username && endpoint === me.endpoint)),
+        false,
+    );
 
+    const [canCompete, setCanCompete] = useState<boolean>(false);
+    useEffect(() => {
         DataCenter.getInstance().getCompeteList().then(comps => {
             if (comps.find(us => us.participants.find(u => u.username === username && u.endpoint === endpoint))) {
                 setCanCompete(false);
@@ -37,22 +36,29 @@ export const User: React.FC = () => {
         });
     });
 
-    const onClick = async () => {
+    const nav = useNavigate();
+
+    const handleCompete = async () => {
         await DataCenter.getInstance().addUserToCompeteList(user);
-        setCanCompete(false);
     };
 
+    const handleRemove = async () => {
+        await DataCenter.getInstance().removeUser(user);
+        nav('/');
+    }
+
     return (
-        <VerticalFlex>
+        <VerticalFlex style={{ gap: 20 }}>
             <h1 style={{ margin: 0 }}>{username}</h1>
-            <p>{new Date(ts).toDateString()}</p>
 
-            {/* TODO: 3 rings stand for easy/hard/medium */}
-            <Ring percentage={[percentage, percentage, percentage]} size={200} />
-
+            <HorizontalFlex style={{ gap: 20, alignItems: 'flex-start' }}>
+                <Ring percentage={[percentage, percentage, percentage]} size={200} />
+                <p>{new Date(ts).toDateString()}</p>
+            </HorizontalFlex>
             <h3>submissions: <Number>{count}/{goal}</Number></h3>
 
-            <Button variant="contained" onClick={onClick} disabled={!canCompete}>Compete with {username}</Button>
+            {isMyself ? null : <Button variant="contained" onClick={handleCompete} disabled={canCompete}>Compete with {username}</Button>}
+            {isMyself ? null : <Button onClick={handleRemove}>Remove {username}</Button>}
         </VerticalFlex>
     );
 }

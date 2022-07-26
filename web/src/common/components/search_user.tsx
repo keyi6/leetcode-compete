@@ -41,7 +41,7 @@ export const SearchUser: React.FC<IUserProps> = (props) => {
 
     return (
         <VerticalFlex style={{ gap: 30 }}>
-            <HorizontalFlex style={{ alignItems: 'baseline', justifyContent: 'space-between' }}>
+            <HorizontalFlex style={{ alignItems: 'flex-end', justifyContent: 'space-between' }}>
                 <TextField id="username" label="username" variant="standard" 
                     value={username} onChange={(e) => setUsername(e.target.value)}
                     style={{ flexGrow: 1, marginRight: 20 }} />

@@ -37,4 +37,3 @@ Open [http://localhost:{PORT}](http://localhost:{PORT}) in your browser to get s
 There are a lot of work going on.
 - [ ] add `/get-difficulty` api, different score for different type of different.
 - [ ] save competition info and recent submissions on server instead of localstorage
-- [ ] add 'delete user' button in uesr page

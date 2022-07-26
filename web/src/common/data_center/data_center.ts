@@ -129,4 +129,14 @@ export class DataCenter {
             goal,
         };
     }
+
+    public async removeUser(user: IUser) {
+        const competeList = (await this.service.getCompeteList())
+            .filter(c => c.participants.find(u => u.username === user.username && u.endpoint === user.endpoint));
+        await this.service.setCompeteList(competeList);
+
+        const watchList = (await this.service.getWatchList())
+            .filter(w => w.username === user.username && w.endpoint === user.endpoint);
+        await this.service.setWatchList(watchList);
+    }
 }

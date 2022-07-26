@@ -1,6 +1,5 @@
 from curses import REPORT_MOUSE_POSITION
 from enum import Enum
-from urllib import response
 from requests import post
 import constants
 
