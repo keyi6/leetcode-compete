@@ -26,3 +26,6 @@ questions  = get_questions(2500, 0)
 print('get leetcode questions count: %d' % (len(questions)))
 request = [InsertOne(q) for q in questions]
 result = collection.bulk_write(request)
+
+print('done')
+

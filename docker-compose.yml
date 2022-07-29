@@ -7,6 +7,9 @@ services:
         build:
             context: .
             dockerfile: Dockerfile
+            args:
+                - MONGODB_USER=$mongodb_user
+                - MONGODB_PASSWORD=$mongodb_password
         ports:
             - "$port:80"
 

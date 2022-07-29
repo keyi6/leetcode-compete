@@ -1,28 +1,41 @@
-FROM alpine:3.14
+FROM ubuntu:20.04
+SHELL ["/bin/bash", "-c"]
 
-RUN apk update
+# === install ===
+# install dependency
+RUN apt update
+RUN apt install -y curl wget gnupg libcurl4 openssl liblzma5
+# install mongodb
+WORKDIR /usr/mongo
+RUN mkdir -p /usr/mongo
+RUN wget -nv https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2004-4.4.15.tgz
+RUN tar -zxvf mongodb-linux-x86_64-ubuntu2004-4.4.15.tgz
+RUN cp /usr/mongo/mongodb-linux-x86_64-ubuntu2004-4.4.15/bin/* /usr/local/bin/
 # install python
-RUN apk add --no-cache python3 py3-pip
-# install node
-RUN apk add --no-cache nodejs npm
-# install nginx
-RUN apk add --no-cache nginx
-
-## build flask
-WORKDIR /app/backend
-# TODO: delete
+RUN apt install -y python3 python3-pip
 RUN python3 --version
+# install node
+RUN curl -sL https://deb.nodesource.com/setup_14.x -o /tmp/nodesource_setup.sh
+RUN bash /tmp/nodesource_setup.sh
+RUN apt install -y nodejs
+# install nginx
+RUN DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC apt install -y nginx
+
+
+# === prepare ===
+WORKDIR /app
+COPY . .
+
+# === build ===
+## build flask
+WORKDIR /app/server
 # install
 RUN python3 -m pip install --upgrade pip
-COPY ./server/requirements.txt .
-RUN pip3 install --no-cache-dir -r requirements.txt
-COPY ./server/ .
-
+RUN pip3 install --no-cache-dir -r requirements.txt --ignore-installed six
 
 ## build react
-WORKDIR /app/frontend
+WORKDIR /app/web
 ENV NODE_ENV production
-COPY ./web .
 # update npm
 RUN npm i -g npm@8
 RUN npm ci --include=dev
@@ -30,22 +43,31 @@ RUN npm ci --include=dev
 RUN npm run build
 
 
+# === config ===
 # setup nginx
 COPY ./nginx/nginx.conf /etc/nginx/nginx.conf
-
 RUN rm -rf /usr/share/nginx/html
-RUN cp -r /app/frontend/build /usr/share/nginx/html
-
+RUN cp -r /app/web/build /usr/share/nginx/html
 EXPOSE 80
 
 
-# create startup bash
-WORKDIR /app
-RUN touch entrypoint.sh
-RUN echo "#!/bin/sh" > entrypoint.sh
-RUN echo "python3 -m gunicorn --chdir /app/backend -w 4 --bind 0.0.0.0:5000 wsgi:app --daemon" >> entrypoint.sh
-#RUN echo "nginx -g daemon off;" >> entrypoint.sh
-RUN echo "nginx -g \"daemon off;\"" >> entrypoint.sh
-RUN chmod +x entrypoint.sh
+# === entry ===
+WORKDIR /app/setup
+# prepare required dir
+RUN mkdir -p /data/db
+RUN mkdir -p /app/logs
 
-ENTRYPOINT ["/app/entrypoint.sh"]
+COPY ./setup .
+RUN chmod +x ./init_mongodb.sh
+RUN chmod +x ./entrypoint.sh
+
+# init mongodb
+ARG MONGODB_USER
+ARG MONGODB_PASSWORD
+RUN sed -i -e 's/USER/'$MONGODB_USER'/g' ./init_mongodb.sh
+RUN sed -i -e 's/PWD/'$MONGODB_PASSWORD'/g' ./init_mongodb.sh
+RUN mongod --fork --logpath /app/logs/mongodb.log && ./init_mongodb.sh
+
+# startup shell
+ENTRYPOINT ["/app/setup/entrypoint.sh"]
+
