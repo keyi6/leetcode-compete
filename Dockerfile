@@ -51,7 +51,7 @@ RUN cp -r /app/web/build /usr/share/nginx/html
 EXPOSE 80
 
 
-# === entry ===
+# === setup ===
 WORKDIR /app/setup
 # prepare required dir
 RUN mkdir -p /data/db
@@ -68,6 +68,6 @@ RUN sed -i -e 's/USER/'$MONGODB_USER'/g' ./init_mongodb.sh
 RUN sed -i -e 's/PWD/'$MONGODB_PASSWORD'/g' ./init_mongodb.sh
 RUN mongod --fork --logpath /app/logs/mongodb.log && ./init_mongodb.sh
 
-# startup shell
+# entry point shell
 ENTRYPOINT ["/app/setup/entrypoint.sh"]
 

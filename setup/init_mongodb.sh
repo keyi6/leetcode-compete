@@ -8,6 +8,5 @@ mongo <<EOF
     db.createUser({user: user, pwd: pwd, roles: ["readWrite"]});
 EOF
 
-cd /app
-python3 ./server/setup/init_questions_collection.py
+python3 ./init_questions_collection.py
 
