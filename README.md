@@ -5,10 +5,18 @@ LeetCode Compete is a project for you and your friends to compete your leetcode 
 
 ## deploy
 1. create `.env` file \
-\* replace `{PORT}` with port number that you like.
+\* replace `{VAR}` with stuff that that you like.
 ```
 touch .env
-echo port={PORT} > .env
+echo port={PORT} >> .env
+echo mongodb_user={MONGODB_USER} >> .env
+echo mongodb_password={MONGODB_PASSWORD} >> .env
+```
+Here is an example of `.env` file.
+```.env
+port=3333
+mongodb_user=ohmygosh_im_dbadmin
+mongodb_password=foobar
 ```
 
 2. build a docker image and startup a container.
