@@ -2,13 +2,15 @@ import React, { useEffect, useState } from 'react';
 import styled from '@emotion/styled';
 import Button from '@mui/material/Button';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Color, DataCenter, Endpoint, HorizontalFlex, IUser, IUserDailyStatus, Ring, useAsyncMemo, VerticalFlex } from '../../common';
+import { Color, DataCenter, Endpoint, HorizontalFlex, IUser, IUserDailyStatus, Ring, useAsyncMemo, useGuide, VerticalFlex } from '../../common';
 
 const Number = styled.div`
     color: ${Color.RED};
 `;
 
 export const User: React.FC = () => {
+    useGuide();
+
     const { endpoint, username, timestamp } = useParams();
     const user: IUser = {
         username: username || '',

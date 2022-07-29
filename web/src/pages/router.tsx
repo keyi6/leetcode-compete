@@ -1,10 +1,11 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import styled from '@emotion/styled';
 import { Add } from './add';
 import { Home } from './home';
 import { Setup } from './setup';
 import { User } from './user';
 import { Competition } from './competition';
-import styled from '@emotion/styled';
+import { Guide } from './guide';
 
 interface IPageConfig {
     path: string;
@@ -15,6 +16,10 @@ const PAGE_CONFIGS: IPageConfig[] = [
     {
         path: '/setup',
         element: <Setup />,
+    },
+    {
+        path: '/guide',
+        element: <Guide />,
     },
     // {
     //     path: '/summary',
