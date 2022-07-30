@@ -26,13 +26,8 @@ RUN DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC apt install -y nginx
 WORKDIR /app
 COPY . .
 
-# === build ===
-## build flask
-WORKDIR /app/server
-# install
-RUN python3 -m pip install --upgrade pip
-RUN pip3 install --no-cache-dir -r requirements.txt
 
+# === build ===
 ## build react
 WORKDIR /app/web
 ENV NODE_ENV production
@@ -41,6 +36,12 @@ RUN npm i -g npm@8
 RUN npm ci --include=dev
 # get static file
 RUN npm run build
+
+## build flask
+WORKDIR /app/server
+# install
+RUN python3 -m pip install --upgrade pip
+RUN pip3 install --no-cache-dir -r requirements.txt
 
 
 # === config ===
@@ -69,4 +70,3 @@ RUN mongod --fork --logpath /app/logs/mongodb.log && ./init_mongodb.sh
 
 # entry point shell
 ENTRYPOINT ["/app/setup/entrypoint.sh"]
-

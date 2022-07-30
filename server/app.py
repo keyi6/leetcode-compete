@@ -121,14 +121,16 @@ def start_competition():
             'competitionId': check_ongoing_competition['competitionId']
         }), 200
 
+    tomorrow = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(hours=24)
     res = {
         'competitionId': uuid.uuid4(),
-        'startTime': int((datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(hours=24)).timestamp()),
+        'startTime': tomorrow,
     }
 
     db.competitions.insert_one({
         **res,
         'participants': list(map(lambda x: { 'username': x[0], 'endpoint': x[1].value }, participants)),
+        'endTime': tomorrow + timedelta(days=7),
     })
 
     return jsonify({ **res, 'status': True }), 200
@@ -167,6 +169,7 @@ def query_my_competitions():
         'competitions': [{
             'competitionId': str(c['competitionId']),
             'startTime': c['startTime'],
+            'endTime': c['endTime'],
             'participants': c['participants'],
         } for c in competitions]
     }
