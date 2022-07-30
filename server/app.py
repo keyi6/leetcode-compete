@@ -118,19 +118,19 @@ def start_competition():
         return jsonify({
             'status': False,
             'err': 'There is an ongoing competition',
-            'competitionId': check_ongoing_competition['competitionId']
+            'competitionId': str(check_ongoing_competition['_id'])
         }), 200
 
     tomorrow = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(hours=24)
     res = {
-        'competitionId': uuid.uuid4(),
         'startTime': tomorrow,
+        'endTime': tomorrow + timedelta(days=7),
+        'competitionId': uuid.uuid4(),
     }
 
     db.competitions.insert_one({
         **res,
         'participants': list(map(lambda x: { 'username': x[0], 'endpoint': x[1].value }, participants)),
-        'endTime': tomorrow + timedelta(days=7),
     })
 
     return jsonify({ **res, 'status': True }), 200
@@ -143,12 +143,25 @@ def query_competition():
         return 'competitionId is required', 400
     
     competition_id = uuid.UUID(post_data['competitionId'])
-    res = db.competitions.find_one({ 'competitionId': competition_id })
+    res = db.competitions.aggregate([
+        { '$match': { 'competitionId': competition_id } },
+        { '$limit': 1 },
+        {
+            '$project': {
+                "_id" : 0,
+                "startTime": { "$toLong": "$startTime" },
+                "endTime": { "$toLong": "$endTime" },
+                "participants": 1,
+                "competitionId": 1,
+            },
+        },
+    ])
 
-    return jsonify({
-        'startTime': res['startTime'],
-        'participants': res['participants'],
-    })
+    competitions = [r for r in res]
+    if not competitions:
+        return jsonify({ 'status': False })
+
+    return jsonify({ 'status': True, **competitions[0] }), 200
 
 
 @app.route('/query-my-competitions', methods=['POST'])
@@ -159,19 +172,23 @@ def query_my_competitions():
     except Exception as exp:
         return str(exp), 400
 
-    competitions = db.competitions.find({
-        'participants': {
-            '$elemMatch': { 'username': username, 'endpoint': endpoint.value }
+    competitions = db.competitions.aggregate([
+        {
+            '$match': {
+                'participants': {
+                    '$elemMatch': { 'username': username, 'endpoint': endpoint.value }
+                }
+            }
+        },
+        {
+            "$project": {
+                "_id" : 0,
+                "startTime": { "$toLong": "$startTime" },
+                "endTime": { "$toLong": "$endTime" },
+                "participants": 1,
+                "competitionId": 1,
+            }
         }
-    })
+    ])
 
-    res = {
-        'competitions': [{
-            'competitionId': str(c['competitionId']),
-            'startTime': c['startTime'],
-            'endTime': c['endTime'],
-            'participants': c['participants'],
-        } for c in competitions]
-    }
-
-    return jsonify(res), 200
+    return jsonify({ 'competitions': [c for c in competitions] }), 200
