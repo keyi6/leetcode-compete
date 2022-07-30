@@ -58,7 +58,11 @@ def check_uesr():
     except:
         return 'endpoint \'%s\' is not valid' % (post_data['endpoint']), 400
 
-    return check_uesr_exist(username, Endpoint(endpoint))
+    exist = check_uesr_exist(username, Endpoint(endpoint))
+    res = { 'status': exist }
+
+    if not exist: res['err'] = 'User with username "%s" in "%s" endpoint does not exist.' % (username, post_data['endpoint'])
+    return jsonify(res), 200
 
 
 @app.route('/query-difficulty', methods=['POST'])

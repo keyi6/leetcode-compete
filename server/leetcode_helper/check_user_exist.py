@@ -16,9 +16,7 @@ def _check_uesr_exist_from_cn_enpoint(username: str):
         },
     }, headers=constants.HEADER_FOR_CN_ENDPOINT)
 
-    if response.json()['data']['userProfilePublicProfile']: return 'exists', 200
-    return 'does not exist', 404
-
+    return bool(response.json()['data']['userProfilePublicProfile'])
 
 def _check_uesr_exist_from_us_enpoint(username: str):
     response = post('https://leetcode.com/graphql/', json={
@@ -32,8 +30,7 @@ def _check_uesr_exist_from_us_enpoint(username: str):
         },
     }, headers=constants.HEADER_FOR_US_ENDPOINT)
 
-    if response.json()['data']['matchedUser']: return 'exists', 200
-    return 'does not exist', 404
+    return bool(response.json()['data']['matchedUser'])
 
 
 def check_uesr_exist(username: str, endpoint: Endpoint):
