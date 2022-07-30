@@ -1,7 +1,11 @@
 from flask import Flask, request, jsonify
-from leetcode_helper.get_recent_submissions import get_recent_submissions, Endpoint
-from mongodb_helper.uri import uri
 from flask_pymongo import PyMongo
+
+from mongodb_helper.uri import uri
+from leetcode_helper.constants import Endpoint
+
+from leetcode_helper.get_recent_submissions import get_recent_submissions
+from leetcode_helper.check_user_exist import check_uesr_exist
 
 app = Flask(__name__)
 app.config['JSON_AS_ASCII'] = False
@@ -33,12 +37,28 @@ def recent_submissions():
 
     # check if parameters are valid
     if not username:
-        return 'username are required', 400
+        return 'username is required', 400
     if not endpoint:
         return 'endpoint \'%s\' is not valid' % (request.args.get('ep')), 400
 
-    content, status_code = get_recent_submissions(username, endpoint)
-    return content, status_code
+    return get_recent_submissions(username, endpoint)
+
+
+@app.route('/check-user', methods=['POST'])
+def check_uesr():
+    post_data = request.get_json()
+    if not 'username' in post_data or not post_data['username']:
+        return 'username is required', 400
+    if not 'endpoint' in post_data or not post_data['endpoint']:
+        return 'endpoint is required', 400
+
+    username = post_data['username']
+    try:
+        endpoint = Endpoint(post_data['endpoint'])
+    except:
+        return 'endpoint \'%s\' is not valid' % (post_data['endpoint']), 400
+
+    return check_uesr_exist(username, Endpoint(endpoint))
 
 
 @app.route('/query-difficulty', methods=['POST'])

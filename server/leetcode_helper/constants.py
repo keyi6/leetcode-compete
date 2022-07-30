@@ -1,4 +1,9 @@
-# TODO: check if python have ES6 like spread operator ... to make codes below elegant
+from enum import Enum
+
+class Endpoint(Enum):
+    US = 'us'
+    CN = 'cn'
+
 
 _USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.5060.53 Safari/537.36'
 _CONTENT_TYPE = 'application/json'

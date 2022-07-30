@@ -1,10 +1,6 @@
-from enum import Enum
 from requests import post
 import leetcode_helper.constants as constants
-
-class Endpoint(Enum):
-    US = 'us'
-    CN = 'cn'
+from leetcode_helper.constants import Endpoint
 
 
 def _get_recent_submissions_from_us_endpoint(username: str):
