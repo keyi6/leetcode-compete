@@ -7,7 +7,7 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import Alert from '@mui/material/Alert';
 import { HorizontalFlex, VerticalFlex } from './flex';
 import { Endpoint } from '../constants';
-import { getRecentSubmissions } from '../services';
+import { checkUser } from '../services';
 import { IUser } from '../interfaces';
 
 export interface IUserProps {
@@ -29,7 +29,7 @@ export const SearchUser: React.FC<IUserProps> = (props) => {
         setLoading(true);
         const user = { username, endpoint };
         try {
-            const submissions = await getRecentSubmissions(user);
+            await checkUser(user);
             await props.onClick(user);
         } catch (err) {
             setErr(JSON.stringify(err));

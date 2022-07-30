@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { HashRouter, Routes, Route } from 'react-router-dom';
 import styled from '@emotion/styled';
 import { Add } from './add';
 import { Home } from './home';
@@ -50,11 +50,11 @@ const Main = styled.main`
 `;
 
 export const Router = () => (
-    <BrowserRouter>
+    <HashRouter>
         <Main>
             <Routes>
                 {PAGE_CONFIGS.map(({path, element}) => (<Route path={path} element={element} key={`page-${path}`} />))}
             </Routes>
         </Main>
-    </BrowserRouter>
+    </HashRouter>
 );
