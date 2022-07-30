@@ -31,7 +31,7 @@ COPY . .
 WORKDIR /app/server
 # install
 RUN python3 -m pip install --upgrade pip
-RUN pip3 install --no-cache-dir -r requirements.txt --ignore-installed six
+RUN pip3 install --no-cache-dir -r requirements.txt
 
 ## build react
 WORKDIR /app/web
@@ -57,15 +57,14 @@ WORKDIR /app/setup
 RUN mkdir -p /data/db
 RUN mkdir -p /app/logs
 
-COPY ./setup .
 RUN chmod +x ./init_mongodb.sh
 RUN chmod +x ./entrypoint.sh
 
 # init mongodb
 ARG MONGODB_USER
 ARG MONGODB_PASSWORD
-RUN sed -i -e 's/USER/'$MONGODB_USER'/g' ./init_mongodb.sh
-RUN sed -i -e 's/PWD/'$MONGODB_PASSWORD'/g' ./init_mongodb.sh
+RUN sed -i -e 's/USER/'$MONGODB_USER'/g' ./init_mongodb_create_user.js
+RUN sed -i -e 's/PWD/'$MONGODB_PASSWORD'/g' ./init_mongodb_create_user.js
 RUN mongod --fork --logpath /app/logs/mongodb.log && ./init_mongodb.sh
 
 # entry point shell
