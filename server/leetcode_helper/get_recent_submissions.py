@@ -1,3 +1,4 @@
+from urllib import response
 from requests import post
 import leetcode_helper.constants as constants
 from leetcode_helper.constants import Endpoint
@@ -8,6 +9,7 @@ def _get_recent_submissions_from_us_endpoint(username: str):
         'query': '''query recentAcSubmissions($username: String!, $limit: Int!) {
             recentAcSubmissionList(username: $username, limit: $limit) {
                 title
+                id
                 titleSlug
                 timestamp
             }
@@ -18,13 +20,18 @@ def _get_recent_submissions_from_us_endpoint(username: str):
         }
     }, headers=constants.HEADER_FOR_US_ENDPOINT)
 
-    return response.json(), response.status_code
+    try:
+        s = response.json()['data']['recentAcSubmissionList']
+        return list(map(lambda x: { **x, 'timestamp': int(x['timestamp']) }, s))
+    except:
+        return []
 
 
 def _get_recent_submissions_from_cn_endpoint(username: str):
     response = post('https://leetcode.cn/graphql/noj-go/', json={
         'query': '''query recentAcSubmissions($userSlug: String!) {
             recentACSubmissions(userSlug: $userSlug) {
+                submissionId
                 submitTime
                 question {
                     translatedTitle
@@ -37,22 +44,20 @@ def _get_recent_submissions_from_cn_endpoint(username: str):
         },
     }, headers=constants.HEADER_FOR_CN_ENDPOINT)
 
-    content = response.json()
-    # format the response same as the response from us endpoint
-    if response.status_code == 200 and content['data']['recentACSubmissions']:
+    try:
+        content = response.json()
+        # format the response same as the response from us endpoint
         def formatter(r):
             return {
                 'titleSlug': r['question']['titleSlug'],
                 'title': r['question']['translatedTitle'],
                 'timestamp': r['submitTime'],
+                'id': str(r['submissionId']),
             }
 
-        content = {
-            'data': {
-                'recentAcSubmissionList': list(map(formatter, content['data']['recentACSubmissions'])),
-            }
-        }
-    return content, response.status_code
+        return list(map(formatter, content['data']['recentACSubmissions']))
+    except:
+        return []
 
 
 def get_recent_submissions(username: str, endpoint: Endpoint):

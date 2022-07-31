@@ -1,10 +1,7 @@
-import os
 import sys
-import json
 import pathlib
-import urllib.parse
-from datetime import datetime
 from pymongo import MongoClient, InsertOne
+from datetime import datetime
 
 # add path to import helper package
 current_path = pathlib.Path(__file__).parent.resolve()
@@ -12,13 +9,15 @@ server_path = '%s/server' % (current_path.parent.resolve().absolute())
 sys.path.insert(0, '%s/leetcode_helper' % (server_path))
 sys.path.insert(0, '%s/mongodb_helper' % (server_path))
 from get_questions import get_questions
-from connect import connect
+from uri import uri
 
 
 log = lambda x: print('[%s: %s]' % (__file__, datetime.now()), x)
 
 # connect to mongodb
-db = connect()
+client = MongoClient(uri('LeetcodeCompete'))
+db = client.LeetcodeCompete
+db = connect('')
 collection = db.questions
 log('connected to mongodb')
 

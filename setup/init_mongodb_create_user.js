@@ -1,6 +1,12 @@
-
 var user="USER";
 var pwd="PWD";
 
-use LeetcodeCompete;
-db.createUser({user: user, pwd: pwd, roles: ["readWrite"]});
+use admin;
+db.createUser({
+    user,
+    pwd,
+    roles: [
+        { role: "readWrite", db: "LeetcodeCompete" },
+        { role: "readWrite", db: "LeetcodeSubmissions" },
+    ],
+});
