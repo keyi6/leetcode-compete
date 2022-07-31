@@ -17,7 +17,6 @@ log = lambda x: print('[%s: %s]' % (__file__, datetime.now()), x)
 # connect to mongodb
 client = MongoClient(uri('LeetcodeCompete'))
 db = client.LeetcodeCompete
-db = connect('')
 collection = db.questions
 log('connected to mongodb')
 
