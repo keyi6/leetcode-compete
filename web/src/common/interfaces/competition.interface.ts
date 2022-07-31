@@ -11,5 +11,7 @@ export interface ICompetitionStatus extends ICompetitionInfo {
     status: ({
         user: IUser;
         scores: number[];
+        totalScore: number;
+        isWinning: boolean;
     })[];
 }

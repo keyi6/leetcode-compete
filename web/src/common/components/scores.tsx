@@ -4,12 +4,8 @@ import { Color } from "../constants";
 import { ICompetitionStatus } from "../interfaces";
 import { HorizontalFlex, VerticalFlex } from "./flex";
 
-function sum(arr: number[]): number {
-    return arr.reduce((prev, cur) => prev + cur, 0);
-}
-
-function getLast(arr: number[]): number | undefined {
-    if (arr.length === 0) return;
+function getLast(arr: number[]): number {
+    if (arr.length === 0) return 0;
     return arr[arr.length - 1];
 }
 
@@ -39,15 +35,11 @@ const FULL_WIDTH_STYLE: React.CSSProperties = {
 };
 
 export const Scores: React.FC<IScoresProps> = ({ status, fullWidth = false }) => {
-    const info = useMemo(() => {
-        const temp = (status?.status || []).map(({ user, scores }) => ({
-            name: user.username,
-            totalScore: sum(scores),
-            todayScore: getLast(scores),
-        }));
-        const max = temp.reduce((prev, cur) => Math.max(prev, cur.totalScore), 0);
-        return temp.map(t => ({ ...t, isWinning: max === t.totalScore }));
-    }, [status]);
+    const info = useMemo(() => (status?.status || []).map(s => ({
+        ...s,
+        name: s.user.username,
+        todayScore: getLast(s.scores),
+    })), [status]);
 
     return (
         <HorizontalFlex style={fullWidth ? FULL_WIDTH_STYLE : {}}>

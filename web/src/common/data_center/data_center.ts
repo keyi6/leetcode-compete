@@ -104,12 +104,14 @@ export class DataCenter {
         const status = await Promise.all(competition.participants.map(async (user) => {
             const submissions = await this.service.getUserSubmissions(user);
             const scores = days.map(ts => filterDailySubmissions(ts, submissions)).map(calcDailyScore);
-            return { scores, user };
+            const totalScore = scores.reduce<number>((prev, cur) => prev + cur, 0);
+            return { scores, user, totalScore };
         }));
+        const maxScore = Math.max(...(status.map(s => s.totalScore)));
         
         return {
             ...competition,
-            status,
+            status: status.map(s => ({ ...s, isWinning: s.totalScore === maxScore })),
             daysLeft: 7 - Math.floor((getMidNightTimestamp(Date.now()) - competition.startTime) / ONE_DAY),
         };
     }
