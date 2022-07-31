@@ -1,3 +1,4 @@
+from flask import jsonify
 from leetcode_helper.constants import Endpoint
 
 def check_user_parameter(post_data: dict):
@@ -13,3 +14,8 @@ def check_user_parameter(post_data: dict):
         raise Exception('check_user_parameter failed | endpoint \'%s\' is not valid' % (post_data['endpoint']))
 
     return [username, endpoint]
+
+
+def invalid_request(err):
+    if not isinstance(err, str): err = str(err)
+    return jsonify({ 'err': err }), 400

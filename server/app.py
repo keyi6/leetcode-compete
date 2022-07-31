@@ -22,30 +22,13 @@ def hello():
     return 'hello', 200
 
 
-# TODO: delete this api
-@app.route('/recent-submissions', methods=['GET'])
-def recent_submissions():
-    # get username from querystring
-    username = request.args.get('u', type=str)
-    # get endpoint from querystring
-    endpoint = request.args.get('ep', type=Endpoint)
-
-    # check if parameters are valid
-    if not username:
-        return 'username is required', 400
-    if not endpoint:
-        return 'endpoint \'%s\' is not valid' % (request.args.get('ep')), 400
-
-    return get_recent_submissions(username, endpoint)
-
-
 @app.route('/query-recent-submissions', methods=['POST'])
 def query_recent_submissions():
     post_data = request.get_json()
     try:
         [username, endpoint] = utils.check_user_parameter(post_data)
     except Exception as exp:
-        return str(exp), 400
+        return utils.invalid_request(exp)
 
     return get_recent_submissions(username, endpoint)
 
@@ -56,12 +39,13 @@ def check_user():
     try:
         [username, endpoint] = utils.check_user_parameter(post_data)
     except Exception as exp:
-        return str(exp), 400
+        return utils.invalid_request(exp)
 
     exist = check_user_exist(username, Endpoint(endpoint))
     res = { 'status': exist }
 
-    if not exist: res['err'] = 'User with username "%s" in "%s" endpoint does not exist.' % (username, post_data['endpoint'])
+    if not exist:
+        res['err'] = 'User with username "%s" in "%s" endpoint does not exist.' % (username, post_data['endpoint'])
     return jsonify(res), 200
 
 
@@ -103,14 +87,19 @@ def query_difficulties():
 def start_competition():
     post_data = request.get_json()
     if not 'participants' in post_data:
-        return 'participants list is required', 400
+        return utils.invalid_request('participants list is required')
     if not isinstance(post_data['participants'], list):
-        return 'participants must be a list of users', 400
-    participants = list(map(lambda x: utils.check_user_parameter(x), post_data['participants']))
+        return utils.invalid_request('participants must be a list of users')
+    try:
+        participants = list(map(lambda x: utils.check_user_parameter(x), post_data['participants']))
+    except Exception as exp:
+        return utils.invalid_request(exp)
 
     check_ongoing_competition = db.competitions.find_one({
         'participants': {
-            '$all': [{ '$elemMatch': { 'username': username, 'endpoint': endpoint.value }} for username, endpoint in participants]
+            '$all': [{
+                '$elemMatch': { 'username': username, 'endpoint': endpoint.value }
+            } for username, endpoint in participants]
         }
     })
 
@@ -118,7 +107,7 @@ def start_competition():
         return jsonify({
             'status': False,
             'err': 'There is an ongoing competition',
-            'competitionId': str(check_ongoing_competition['_id'])
+            'competitionId': str(check_ongoing_competition['competitionId'])
         }), 200
 
     tomorrow = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(hours=24)
@@ -140,7 +129,7 @@ def start_competition():
 def query_competition():
     post_data = request.get_json()
     if not 'competitionId' in post_data or not post_data['competitionId']:
-        return 'competitionId is required', 400
+        return utils.invalid_request('competitionId is required')
     
     competition_id = uuid.UUID(post_data['competitionId'])
     res = db.competitions.aggregate([
@@ -159,7 +148,10 @@ def query_competition():
 
     competitions = [r for r in res]
     if not competitions:
-        return jsonify({ 'status': False })
+        return jsonify({
+            'status': False,
+            'err': 'no competition with id=%s found' % (post_data['competitionId']),
+        })
 
     return jsonify({ 'status': True, **competitions[0] }), 200
 
@@ -170,7 +162,7 @@ def query_my_competitions():
     try:
         [username, endpoint] = utils.check_user_parameter(post_data)
     except Exception as exp:
-        return str(exp), 400
+        return utils.invalid_request(exp)
 
     competitions = db.competitions.aggregate([
         {
