@@ -2,6 +2,7 @@ import { StorageKey } from './storage_key';
 import { ISubmission } from '../services';
 import { IStorage, LocalStorage } from './storage';
 import { ICompetitionInfo, IUser } from '../interfaces';
+import { Endpoint } from '../constants';
 
 export class DataService {
     private storage: IStorage;
@@ -32,9 +33,18 @@ export class DataService {
         return this.storage.set(StorageKey.MY_USER_INFO, user)
     }
 
-    public async getMyUserInfo(): Promise<IUser> {
+    public async getMyUserInfo(): Promise<IUser | undefined> {
         const v = await this.storage.get(StorageKey.MY_USER_INFO);
-        return JSON.parse(v || '{}') as IUser;
+        if (!v) return;
+        try {
+            const u = JSON.parse(v);
+            if (u['username'] && Object.values(Endpoint).includes(u['endpoint'])) {
+                return u as IUser;
+            }
+        } catch(err) {
+            console.error(err);
+        }
+        return;
     }
 
     public async setUserSubmissions(user: IUser, submissions: ISubmission[]): Promise<void> {

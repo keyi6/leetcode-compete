@@ -1,19 +1,22 @@
 import axios from 'axios';
 import { IUser } from '../interfaces';
-import { toQuerystring } from '../utils';
 
 export interface ISubmission {
     timestamp: number;
     title: string;
     titleSlug: string;
+    difficulty: 'Easy' | 'Medium' | 'Hard';
 }
 
-export async function getRecentSubmissions({ username, endpoint}: IUser): Promise<ISubmission[]> {
-    const res = await axios.get(`/api/recent-submissions?${toQuerystring({
-        u: username,
-        ep: endpoint,
-    })}`);
-    if (res.status !== 200 || !res.data?.data?.recentAcSubmissionList) return Promise.reject(res);
-    return res.data.data.recentAcSubmissionList
-        .map((s: ISubmission) => ({ ...s, timestamp: s.timestamp * 1000 }));
+export async function getRecentSubmissions(user: IUser): Promise<ISubmission[]> {
+    try {
+        const res = await axios.post<{
+            submissions: ISubmission[];
+        }>('/api/query-recent-submissions', user);
+        return res.data.submissions
+            .map((s: ISubmission) => ({ ...s, timestamp: s.timestamp * 1000 }));
+    } catch(err) {
+        console.error(err);
+        return [];
+    }
 }

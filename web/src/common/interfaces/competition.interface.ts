@@ -3,6 +3,7 @@ import { IUser } from './user.interface';
 export interface ICompetitionInfo {
     competitionId: string;
     startTime: number;
+    endTime: number;
     participants: IUser[];
 }
 

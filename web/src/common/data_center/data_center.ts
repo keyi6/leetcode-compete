@@ -5,7 +5,8 @@ import unionWith from 'lodash/unionWith';
 import uniq from 'lodash/uniq';
 import flatten from 'lodash/flatten';
 import isEqual from 'lodash/isEqual';
-import { calcDailyScore, getDaysTimestampSince, getMidNightTimestamp, ONE_DAY } from '../utils';
+import { calcDailyScore, equal, getDaysTimestampSince, getMidNightTimestamp, ONE_DAY, userToString } from '../utils';
+import { getMyCompetitions, startCompetition } from '../services/competition';
 
 export class DataCenter {
     // singleton implementation 
@@ -22,18 +23,25 @@ export class DataCenter {
     // class members and methods
     /** reading/writing data service instance */
     private service: DataService;
+    private submissions: { [key: string]: ISubmission[] } = {};
+    private competitions: ICompetitionInfo[] = [];
 
     private constructor() {
         this.service = new DataService();
-        this.updateAllUsersSubmissions();
+        // this.updateAllUsersSubmissions();
+        this.fetchMyCompetitions();
     }
 
-    private async updateSubmissions(user: IUser) {
-        const submissions = await getRecentSubmissions(user);
-        if (!submissions) return;
+    private async fetchSubmissions(user: IUser) {
+        const k = userToString(user);
+        if (this.submissions[k]) return;
+        this.submissions[k] = await getRecentSubmissions(user);
+    }
 
-        const prevSubmissions = await this.service.getUserSubmissions(user);
-        await this.service.setUserSubmissions(user, unionWith(prevSubmissions, submissions, isEqual));
+    private async fetchMyCompetitions() {
+        const me = await this.getMyUserInfo();
+        if (!me) return;
+        this.competitions = await getMyCompetitions(me);
     }
 
     private async updateAllUsersSubmissions() {
@@ -41,40 +49,47 @@ export class DataCenter {
         const competeList = (await this.service.getCompeteList()).map(c => c.participants);
         unionWith(watchList, flatten(competeList), isEqual)
             .filter(u => !!u)
-            .forEach(async (user: IUser) => await this.updateSubmissions(user));
+            .forEach(async (user: IUser) => await this.fetchSubmissions(user));
     }
 
-    public async addUserToWatchList(user: IUser) {
+    /**
+     * add user to watch list
+     * since watch list is private so this info store in local storage
+     * @param user
+     */
+    public async watchUser(user: IUser): Promise<void> {
         const watchList = await this.service.getWatchList();
         if (watchList.find(u => u.username === user.username && u.endpoint === user.endpoint)) return;
 
-        await this.updateSubmissions(user);
+        await this.fetchSubmissions(user);
         await this.service.setWatchList([...watchList, user]);
     }
 
-    public async addUserToCompeteList(user: IUser): Promise<void> {
-        const competeList = await this.service.getCompeteList();
-
-        await this.updateSubmissions(user);
+    public async competeUser(user: IUser): Promise<void> {
         const me = await this.service.getMyUserInfo();
-        const startTime = getMidNightTimestamp(Date.now() + ONE_DAY);
+        if (!me) return Promise.reject('No local user info found, must set up first.');
 
-        const competitionId = Math.random().toString(36).substring(2, 10);
+        const participants = [me, user];
+        const res = await startCompetition(participants);
 
-        await this.service.setCompeteList([...competeList, {
-            participants: [me, user],
-            startTime,
-            competitionId,
-        }]);
+        if (!res.status) return Promise.reject(res.err);
+
+        this.competitions.push(res);
+        await this.fetchSubmissions(user);
     }
 
+    /**
+     * set my user info
+     * since my user info is private so this info store in local storage
+     * @param user
+     */
     public async setMyUserInfo(user: IUser) {
-        await this.updateSubmissions(user);
-        await this.addUserToWatchList(user);
+        await this.fetchSubmissions(user);
+        await this.watchUser(user);
         await this.service.setMyUserInfo(user);
     }
 
-    public async getMyUserInfo(): Promise<IUser> {
+    public async getMyUserInfo(): Promise<IUser | undefined> {
         return this.service.getMyUserInfo();
     }
 
@@ -83,12 +98,7 @@ export class DataCenter {
     }
 
     public async getCompeteList(): Promise<ICompetitionInfo[]> {
-        return this.service.getCompeteList();
-    }
-
-    public async getGoal() {
-        // TODO: read it from local storage or whatever
-        return Promise.resolve(5);
+        return this.competitions;
     }
 
     public async getCompetitionStatus(competitionId: string): Promise<ICompetitionStatus | undefined> {
@@ -123,7 +133,7 @@ export class DataCenter {
             .map(s => s.titleSlug);
         const count = uniq(q).length;
 
-        const goal = await this.getGoal();
+        const goal = 5;
         const percentage = Math.round(count / goal * 100);
         return {
             percentage,
@@ -132,13 +142,8 @@ export class DataCenter {
         };
     }
 
-    public async removeUser(user: IUser) {
-        const competeList = (await this.service.getCompeteList())
-            .filter(c => c.participants.find(u => u.username === user.username && u.endpoint === user.endpoint));
-        await this.service.setCompeteList(competeList);
-
-        const watchList = (await this.service.getWatchList())
-            .filter(w => w.username === user.username && w.endpoint === user.endpoint);
+    public async removeUserFromWatchList(user: IUser) {
+        const watchList = (await this.service.getWatchList()).filter(w => !equal(w, user));
         await this.service.setWatchList(watchList);
     }
 }

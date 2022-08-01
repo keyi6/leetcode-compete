@@ -32,9 +32,8 @@ export const SearchUser: React.FC<IUserProps> = (props) => {
             await checkUser(user);
             await props.onClick(user);
         } catch (err) {
-            setErr(JSON.stringify(err));
-            setLoading(false);
-            return;
+            if (typeof(err) === 'string') setErr(err);
+            else setErr(JSON.stringify(err));
         }
         setLoading(false);
     };
@@ -65,7 +64,7 @@ export const SearchUser: React.FC<IUserProps> = (props) => {
             </LoadingButton>
 
             {err && 
-                <Alert severity="error" onClose={() => {}}>
+                <Alert severity="error">
                     Failed to fetch user info from <Link>{link}</Link>. Please check again. Detail: {err}
                 </Alert>
             }

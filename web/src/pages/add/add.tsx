@@ -6,7 +6,7 @@ export const Add: React.FC = () => {
     const nav = useNavigate();
 
     const addUser = async (user: IUser) => {
-        await DataCenter.getInstance().addUserToWatchList(user);
+        await DataCenter.getInstance().watchUser(user);
         nav('/');
     };
 
