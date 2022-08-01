@@ -1,8 +1,8 @@
 import React from 'react';
 import styled from '@emotion/styled';
 import { keyframes } from '@emotion/react';
-import { Color } from '../constants';
-import { Px } from '../interfaces';
+import { Color } from '../common/constants';
+import { Px } from '../common/interfaces';
 
 const ringProgress = keyframes`
     0% { stroke-dasharray: 0 100; }

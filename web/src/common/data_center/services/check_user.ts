@@ -1,5 +1,5 @@
 import axios, { AxiosError } from 'axios';
-import { IUser } from '../interfaces';
+import { IUser } from '../../interfaces';
 
 export async function checkUser(user: IUser): Promise<void> {
     try {

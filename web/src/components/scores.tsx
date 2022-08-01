@@ -1,7 +1,7 @@
 import styled from "@emotion/styled";
 import { useMemo } from "react";
-import { Color } from "../constants";
-import { ICompetitionStatus } from "../interfaces";
+import { Color } from "../common/constants";
+import { ICompetitionStatus } from "../common/interfaces";
 import { HorizontalFlex, VerticalFlex } from "./flex";
 
 function getLast(arr: number[]): number {

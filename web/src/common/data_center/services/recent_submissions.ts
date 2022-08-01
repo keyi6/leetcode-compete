@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { IUser } from '../interfaces';
+import { IUser } from '../../interfaces';
 
 export interface ISubmission {
     timestamp: number;

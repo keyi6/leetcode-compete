@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { DataCenter } from '../data_center';
-import { IUser } from '../interfaces';
+import { DataCenter } from '../common/data_center';
+import { IUser } from '../common/interfaces';
 
 export function useWatchListData() {
     const [watchList, setWatchList] = useState<IUser[]>([]);

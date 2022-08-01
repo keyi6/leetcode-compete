@@ -1,7 +1,7 @@
 import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
 import { useNavigate } from 'react-router-dom';
-import { VerticalFlex } from '../../common';
+import { VerticalFlex } from '../components';
 
 export const Guide: React.FC = () => {
     const nav = useNavigate();

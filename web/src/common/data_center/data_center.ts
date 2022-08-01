@@ -1,12 +1,9 @@
-import { getRecentSubmissions, ISubmission } from '../services';
+import { getRecentSubmissions, ISubmission } from './services';
 import { ICompetitionInfo, ICompetitionStatus, IUser, IUserDailyStatus } from '../interfaces';
 import { DataService } from './data_service';
-import unionWith from 'lodash/unionWith';
 import uniq from 'lodash/uniq';
-import flatten from 'lodash/flatten';
-import isEqual from 'lodash/isEqual';
-import { calcDailyScore, equal, getDaysTimestampSince, getMidNightTimestamp, ONE_DAY, userToString } from '../utils';
-import { getCompetition, getMyCompetitions, startCompetition } from '../services/competition';
+import { calcDailyScore, equal, getDaysTimestampSince, getMidNightTimestamp, ONE_DAY, userToString } from '../../utils';
+import { getCompetition, getMyCompetitions, startCompetition } from './services/competition';
 import { BehaviorSubject } from 'rxjs';
 
 export class DataCenter {

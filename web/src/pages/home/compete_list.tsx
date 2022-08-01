@@ -1,9 +1,8 @@
 import styled from '@emotion/styled';
-import {
-    Card, CardList, Color, DataCenter, HorizontalFlex, ICompetitionStatus, Scores,
-} from '../../common';
+import { Color, DataCenter, ICompetitionStatus } from '../../common';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import { HorizontalFlex, Scores, CardList, Card } from '../../components';
 
 const Days = styled.p`
     margin-left: auto;

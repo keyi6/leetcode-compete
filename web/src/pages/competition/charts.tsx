@@ -1,6 +1,7 @@
 import styled from '@emotion/styled';
 import { useMemo } from 'react';
-import { Color, DAILY_LIMIT, getAdjacentDaysTimestamp, ICompetitionStatus } from '../../common';
+import { Color, ICompetitionStatus } from '../../common';
+import { DAILY_LIMIT, getAdjacentDaysTimestamp } from '../../utils';
 
 const WIDTH = 8;
 const HEIGHT = 150;

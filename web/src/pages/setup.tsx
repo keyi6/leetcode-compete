@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
-import { DataCenter, IUser, SearchUser, VerticalFlex } from '../../common';
+import { DataCenter, IUser } from '../common';
+import { VerticalFlex, SearchUser } from '../components';
 
 export const Setup: React.FC = () => {
     const nav = useNavigate();

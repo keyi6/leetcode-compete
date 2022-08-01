@@ -1,5 +1,5 @@
 import axios, { AxiosError } from 'axios';
-import { ICompetitionInfo, IUser } from '../interfaces';
+import { ICompetitionInfo, IUser } from '../../interfaces';
 
 function formatTime<T extends { startTime: number; endTime: number; }>(obj: T): T {
     return {

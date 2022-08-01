@@ -1,7 +1,7 @@
 import { StorageKey } from './storage_key';
 import { IStorage, LocalStorage } from './storage';
 import { IUser } from '../interfaces';
-import { isUser } from '../utils';
+import { isUser } from '../../utils';
 
 export class DataService {
     private storage: IStorage;

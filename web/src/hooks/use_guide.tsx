@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { DataCenter } from '../../common';
+import { DataCenter } from '../common';
 
 export function useGuide() {
     const nav = useNavigate();

@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { DataCenter, IUser, SearchUser } from '../../common';
+import { DataCenter, IUser } from '../common';
+import { SearchUser } from '../components';
 
 export const Add: React.FC = () => {
     const nav = useNavigate();

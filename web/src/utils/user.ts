@@ -1,5 +1,5 @@
-import { Endpoint } from "../constants";
-import { IUser } from "../interfaces";
+import { Endpoint } from "../common/constants";
+import { IUser } from "../common/interfaces";
 
 export function userToString(user: IUser): string {
     return `${user.username}${user.endpoint}` ;

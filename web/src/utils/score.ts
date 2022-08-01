@@ -1,5 +1,5 @@
 import uniq from 'lodash/uniq';
-import { ISubmission } from '../services';
+import { ISubmission } from '../common/data_center/services';
 
 export const DAILY_LIMIT = 600;
 
