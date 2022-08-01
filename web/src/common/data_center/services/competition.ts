@@ -42,7 +42,7 @@ export async function getMyCompetitions(me: IUser): Promise<ICompetitionInfo[]> 
             competitions: ICompetitionInfo[];
         }>('/api/query-my-competitions', me);
 
-        return res.data.competitions.map(formatTime);
+        return res.data.competitions;
     } catch (err) {
         console.error(err);
         return [];
@@ -55,7 +55,7 @@ export async function getCompetition(competitionId: string): Promise<ICompetitio
             competitionId,
         });
 
-        return formatTime(res.data);
+        return res.data;
     } catch (err) {
         console.error(err);
         return;

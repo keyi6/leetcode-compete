@@ -43,5 +43,3 @@ Open [http://localhost:{PORT}](http://localhost:{PORT}) in your browser to get s
 
 ## todo
 There are a lot of work going on.
-- [ ] add `/get-difficulty` api, different score for different type of different.
-- [ ] save competition info and recent submissions on server instead of localstorage

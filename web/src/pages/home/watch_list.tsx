@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from '@emotion/styled';
 import { Card, CardList, HorizontalFlex, VerticalFlex, Ring } from '../../components';
-import { Color, DataCenter, IUser, IUserDailyStatus } from '../../common';
+import { Color, DataCenter, Goal, IUser, IUserDailyStatus } from '../../common';
 import { useAsyncMemo } from '../../hooks';
 import { getAdjacentDaysTimestamp } from '../../utils';
 
@@ -23,7 +23,7 @@ const Number = styled.b`
 const WatchListItem: React.FC<IUser & { timestamp: number }> = ({ timestamp, ...user }) => {
     const { count, percentage, goal } = useAsyncMemo<IUserDailyStatus>(
         () => DataCenter.getInstance().getUserDailyStatus(user, timestamp),
-        { percentage: 0, count: 0, goal: 5 },
+        { percentage: [0, 0, 0], count: 0, goal: Goal.TOTAL },
     );
 
     const nav = useNavigate();
@@ -33,8 +33,7 @@ const WatchListItem: React.FC<IUser & { timestamp: number }> = ({ timestamp, ...
             nav(`/user/${encodeURIComponent(user.username)}/${encodeURIComponent(user.endpoint)}/${timestamp}`);
         }}>
             <HorizontalFlex>
-                {/* TODO: 3 rings stand for easy/hard/medium */}
-                <Ring percentage={[percentage, percentage, percentage]} />
+                <Ring percentage={percentage} />
 
                 <VerticalFlex style={{ display: `inline-flex`, alignItems: 'flex-start', paddingLeft: 20 }}>
                     <Name>{user.username}</Name>

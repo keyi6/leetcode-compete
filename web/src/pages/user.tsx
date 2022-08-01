@@ -24,7 +24,7 @@ export const User: React.FC = () => {
 
     const { count, percentage, goal } = useAsyncMemo<IUserDailyStatus>(
         () => DataCenter.getInstance().getUserDailyStatus(user, ts),
-        { percentage: 0, count: 0, goal: 5 },
+        { percentage: [0, 0, 0], count: 0, goal: 5 },
         [endpoint, username],
     );
 
@@ -58,7 +58,7 @@ export const User: React.FC = () => {
             <h1 style={{ margin: 0 }}>{username}</h1>
 
             <HorizontalFlex style={{ gap: 20, alignItems: 'flex-start' }}>
-                <Ring percentage={[percentage, percentage, percentage]} size={200} />
+                <Ring percentage={percentage} size={200} />
                 <p>{new Date(ts).toDateString()}</p>
             </HorizontalFlex>
             <h3>submissions: <Number>{count}/{goal}</Number></h3>

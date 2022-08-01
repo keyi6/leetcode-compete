@@ -6,7 +6,7 @@ export interface IUser {
 }
 
 export interface IUserDailyStatus {
-    percentage: number;
+    percentage: [number, number, number];
     count: number;
     goal: number;
 }

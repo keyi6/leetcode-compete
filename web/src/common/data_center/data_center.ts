@@ -2,7 +2,7 @@ import { getRecentSubmissions, ISubmission } from './services';
 import { ICompetitionInfo, ICompetitionStatus, IUser, IUserDailyStatus } from '../interfaces';
 import { DataService } from './data_service';
 import uniq from 'lodash/uniq';
-import { calcDailyScore, equal, getDaysTimestampSince, getMidNightTimestamp, ONE_DAY, userToString } from '../../utils';
+import { calcDailyScore, calcDailyStatus, equal, getDaysTimestampSince, getMidNightTimestamp, ONE_DAY, userToString } from '../../utils';
 import { getCompetition, getMyCompetitions, startCompetition } from './services/competition';
 import { BehaviorSubject } from 'rxjs';
 
@@ -136,18 +136,9 @@ export class DataCenter {
 
     public async getUserDailyStatus(user: IUser, timestamp: number): Promise<IUserDailyStatus> {
         const allSubmissions = await this.fetchSubmissions(user);
-        const q = allSubmissions
-            .filter(s => timestamp <= s.timestamp && s.timestamp <= timestamp + ONE_DAY)
-            .map(s => s.titleSlug);
-        const count = uniq(q).length;
-
-        const goal = 5;
-        const percentage = Math.round(count / goal * 100);
-        return {
-            percentage,
-            count,
-            goal,
-        };
+        const dailySubmissions = allSubmissions
+            .filter(s => timestamp <= s.timestamp && s.timestamp <= timestamp + ONE_DAY);
+        return calcDailyStatus(dailySubmissions);
     }
 
     public async removeUserFromWatchList(user: IUser) {
