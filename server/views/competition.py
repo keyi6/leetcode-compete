@@ -32,22 +32,30 @@ def start_competition():
         return jsonify({
             'status': False,
             'err': 'There is an ongoing competition',
-            'competitionId': str(check_ongoing_competition['competitionId'])
+            'competitionId': str(check_ongoing_competition['competitionId']),
+            'startTime': int(datetime.timestamp(check_ongoing_competition['startTime'])),
+            'endTime': int(datetime.timestamp(check_ongoing_competition['endTime'])),
         }), 200
 
-    tomorrow = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(hours=24)
+    start_time = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(hours=24)
+    end_time = start_time + timedelta(days=7)
     res = {
-        'startTime': tomorrow,
-        'endTime': tomorrow + timedelta(days=7),
         'competitionId': uuid.uuid4(),
     }
 
     db.competitions.insert_one({
         **res,
+        'startTime': start_time,
+        'endTime': end_time,
         'participants': list(map(lambda x: { 'username': x[0], 'endpoint': x[1].value }, participants)),
     })
 
-    return jsonify({ **res, 'status': True }), 200
+    return jsonify({
+        **res,
+        'status': True,
+        'startTime': int(datetime.timestamp(start_time)),
+        'endTime': int(datetime.timestamp(end_time)),
+    }), 200
 
 
 @competition_api.route('/query-competition', methods=['POST'])
