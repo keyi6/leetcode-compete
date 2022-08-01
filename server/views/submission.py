@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify
 import urllib.parse
+from datetime import datetime, timedelta
 
 from leetcode_helper.constants import Endpoint
 from leetcode_helper.get_recent_submissions import get_recent_submissions
@@ -26,11 +27,21 @@ def query_recent_submissions():
     collection_name = username_to_collection_name(username, endpoint)
     collection = submissions_db[collection_name]
 
-    collection.create_index('expireAt', expireAfterSeconds=0)
+    # see if need to update data from leetcode
+    need_update = True
+    last_updated_document = list(collection.find().sort("updatedTime", -1).limit(1))
+    # check last time query leetcode, deside 
+    if last_updated_document and last_updated_document[0]:
+        last_updated_time = last_updated_document[0]['updatedTime']
+        if timedelta(minutes=10) + last_updated_time > datetime.now():
+            need_update = False
 
-    for s in [{ **s, 'expireAt': s['timestamp'] + SEVEN_DAYS} for s in get_recent_submissions(username, endpoint)]:
-        collection.update_one({'id': s['id']}, {'$set': s}, upsert=True)
-    
+    if need_update:
+        collection.create_index('expireAt', expireAfterSeconds=0)
+
+        for s in [{ **s, 'expireAt': s['timestamp'] + SEVEN_DAYS} for s in get_recent_submissions(username, endpoint)]:
+            collection.update_one({ 'id': s['id'] }, { '$set': { **s, 'updatedTime': datetime.now() } }, upsert=True)
+        
     submissions = list(collection.aggregate([{
         '$project': {
             '_id': 0,
@@ -49,4 +60,7 @@ def query_recent_submissions():
             'difficulty': q['difficulty'] if q else None,
         })
 
-    return jsonify({ 'submissions': submissions_with_difficulty }), 200
+    return jsonify({
+        'submissions': submissions_with_difficulty,
+        'updatedFromLeetcode': need_update,
+    }), 200
