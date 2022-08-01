@@ -40,7 +40,7 @@ export const Competition: React.FC = () => {
                 {status.participants.map(u => <Tab label={u.username} />)}
             </Tabs>
 
-            <Submissions user={status.participants[activeTab]} />
+            <Submissions user={status.participants[activeTab]} startTime={status.startTime} endTime={status.endTime} />
         </VerticalFlex>
     );
 };

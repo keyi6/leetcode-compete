@@ -81,7 +81,7 @@ export const Charts: React.FC<IChartsProps> = ({ status }) => {
 
     return (
         <Grid>
-            {days.map(({ timestamp, display, dailyScores }) => (
+            {days.map(({ timestamp, dailyScores }) => (
                 <Bar scores={dailyScores.map(s => s.score)} keyPrefix={timestamp.toString()} 
                     key={`chart-${status.competitionId}-${timestamp}`} />
             ))}

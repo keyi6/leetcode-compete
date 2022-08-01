@@ -58,6 +58,10 @@ export const Submissions: React.FC<ISubmissionProps> = ({ user, startTime, endTi
                     </HorizontalFlex>
                 </Card>
             ))}
+
+            {(!submissions || !submissions.length) && (
+                <p>There are no submissions yet.</p>
+            )}
         </CardList>
     )
 };

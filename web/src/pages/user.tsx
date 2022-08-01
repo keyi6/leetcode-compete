@@ -40,7 +40,8 @@ export const User: React.FC = () => {
 
     const handleCompete = async () => {
         try {
-            await DataCenter.getInstance().competeUser(user);
+            const id = await DataCenter.getInstance().competeUser(user);
+            nav(`/competition/${id}`);
         } catch (err) {
             if (typeof(err) === 'string') setErr(err);
             else setErr(JSON.stringify(err));

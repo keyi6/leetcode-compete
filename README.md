@@ -43,3 +43,7 @@ Open [http://localhost:{PORT}](http://localhost:{PORT}) in your browser to get s
 
 ## todo
 There are a lot of work going on.
+- [ ] i10n
+- [ ] clean code
+- [ ] cronjob update leetcode information
+- [ ] persistent competition result

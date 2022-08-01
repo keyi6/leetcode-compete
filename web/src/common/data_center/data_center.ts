@@ -72,7 +72,7 @@ export class DataCenter {
         await this.service.setWatchList([...watchList, user]);
     }
 
-    public async competeUser(user: IUser): Promise<void> {
+    public async competeUser(user: IUser): Promise<string> {
         const me = await this.service.getMyUserInfo();
         if (!me) return Promise.reject('No local user info found, must set up first.');
 
@@ -83,6 +83,7 @@ export class DataCenter {
 
         this.competitions$.next([...this.competitions$.value, res]);
         await this.fetchSubmissions(user);
+        return res.competitionId;
     }
 
     /**
