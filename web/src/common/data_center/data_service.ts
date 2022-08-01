@@ -1,8 +1,7 @@
 import { StorageKey } from './storage_key';
-import { ISubmission } from '../services';
 import { IStorage, LocalStorage } from './storage';
-import { ICompetitionInfo, IUser } from '../interfaces';
-import { Endpoint } from '../constants';
+import { IUser } from '../interfaces';
+import { isUser } from '../utils';
 
 export class DataService {
     private storage: IStorage;
@@ -17,16 +16,15 @@ export class DataService {
 
     public async getWatchList(): Promise<IUser[]> {
         const v = await this.storage.get(StorageKey.WATCH_LIST); 
-        return JSON.parse(v || '[]') as IUser[];
-    }
+        if (!v) return [];
+        try {
+            const wl =  JSON.parse(v);
 
-    public async setCompeteList(info: ICompetitionInfo[]): Promise<void> {
-        return this.storage.set<ICompetitionInfo[]>(StorageKey.COMPETE_LIST, info);
-    }
-
-    public async getCompeteList(): Promise<ICompetitionInfo[]> {
-        const v = await this.storage.get(StorageKey.COMPETE_LIST); 
-        return JSON.parse(v || '[]') as ICompetitionInfo[];
+            return wl.filter((u: any) => isUser(u))
+        } catch(err) {
+            console.error(err);
+        }
+        return [];
     }
 
     public async setMyUserInfo(user: IUser): Promise<void> {
@@ -38,21 +36,9 @@ export class DataService {
         if (!v) return;
         try {
             const u = JSON.parse(v);
-            if (u['username'] && Object.values(Endpoint).includes(u['endpoint'])) {
-                return u as IUser;
-            }
+            if (isUser(u)) return u;
         } catch(err) {
             console.error(err);
         }
-        return;
-    }
-
-    public async setUserSubmissions(user: IUser, submissions: ISubmission[]): Promise<void> {
-        return this.storage.set(`${StorageKey.SUBMISSIONS}_${user.username}_${user.endpoint}`, submissions);
-    }
-
-    public async getUserSubmissions(user: IUser): Promise<ISubmission[]> {
-        const v = await this.storage.get(`${StorageKey.SUBMISSIONS}_${user.username}_${user.endpoint}`);
-        return JSON.parse(v || '[]') as ISubmission[];
     }
 }

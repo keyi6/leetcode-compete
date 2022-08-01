@@ -12,7 +12,7 @@ export const Competition: React.FC = () => {
     );
 
     if (!status) {
-        return (<h1>Sorry, this competition id: ${competitionId} is not valid.</h1>);
+        return (<h1>Sorry, this competition id: {competitionId} is not valid.</h1>);
     }
 
     return (

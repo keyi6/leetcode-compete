@@ -6,7 +6,8 @@ import uniq from 'lodash/uniq';
 import flatten from 'lodash/flatten';
 import isEqual from 'lodash/isEqual';
 import { calcDailyScore, equal, getDaysTimestampSince, getMidNightTimestamp, ONE_DAY, userToString } from '../utils';
-import { getMyCompetitions, startCompetition } from '../services/competition';
+import { getCompetition, getMyCompetitions, startCompetition } from '../services/competition';
+import { BehaviorSubject } from 'rxjs';
 
 export class DataCenter {
     // singleton implementation 
@@ -19,12 +20,12 @@ export class DataCenter {
         return this.instance;
     }
 
-
     // class members and methods
     /** reading/writing data service instance */
     private service: DataService;
-    private submissions: { [key: string]: ISubmission[] } = {};
-    private competitions: ICompetitionInfo[] = [];
+    private submissions$: BehaviorSubject<{ [key: string]: ISubmission[] }> = new BehaviorSubject({});
+    private submissionPromise: { [key: string]: Promise<ISubmission[]> } = {};
+    private competitions$: BehaviorSubject<ICompetitionInfo[]> = new BehaviorSubject([] as ICompetitionInfo[]);
 
     private constructor() {
         this.service = new DataService();
@@ -33,23 +34,33 @@ export class DataCenter {
     }
 
     private async fetchSubmissions(user: IUser) {
-        const k = userToString(user);
-        if (this.submissions[k]) return;
-        this.submissions[k] = await getRecentSubmissions(user);
+        const key = userToString(user);
+        const current = this.submissions$.value;
+        if (current[key]) return current[key];
+
+        // if submissions are cached, use cached value
+        const p = this.submissionPromise[key];
+        if (p) return await p;
+        // if already posted a request and it have not came back, then wait for it
+        this.submissionPromise[key] = getRecentSubmissions(user);
+        const submissions = await this.submissionPromise[key];
+        delete this.submissionPromise[key];
+
+        current[key] = submissions;
+        this.submissions$.next(current);
+        return submissions;
     }
 
     private async fetchMyCompetitions() {
         const me = await this.getMyUserInfo();
         if (!me) return;
-        this.competitions = await getMyCompetitions(me);
+        const competitions = await getMyCompetitions(me);
+        this.competitions$.next(competitions);
     }
 
     private async updateAllUsersSubmissions() {
         const watchList = await this.service.getWatchList();
-        const competeList = (await this.service.getCompeteList()).map(c => c.participants);
-        unionWith(watchList, flatten(competeList), isEqual)
-            .filter(u => !!u)
-            .forEach(async (user: IUser) => await this.fetchSubmissions(user));
+        watchList.forEach(async (user: IUser) => await this.fetchSubmissions(user));
     }
 
     /**
@@ -59,7 +70,7 @@ export class DataCenter {
      */
     public async watchUser(user: IUser): Promise<void> {
         const watchList = await this.service.getWatchList();
-        if (watchList.find(u => u.username === user.username && u.endpoint === user.endpoint)) return;
+        if (watchList.find(u => equal(u, user))) return;
 
         await this.fetchSubmissions(user);
         await this.service.setWatchList([...watchList, user]);
@@ -74,7 +85,7 @@ export class DataCenter {
 
         if (!res.status) return Promise.reject(res.err);
 
-        this.competitions.push(res);
+        this.competitions$.next([...this.competitions$.value, res]);
         await this.fetchSubmissions(user);
     }
 
@@ -97,13 +108,13 @@ export class DataCenter {
         return this.service.getWatchList();
     }
 
-    public async getCompeteList(): Promise<ICompetitionInfo[]> {
-        return this.competitions;
+    public getCompetitions$() {
+        return this.competitions$;
     }
 
     public async getCompetitionStatus(competitionId: string): Promise<ICompetitionStatus | undefined> {
-        const allCompetitions = await this.service.getCompeteList();
-        const competition = allCompetitions.find(c => c.competitionId === competitionId);
+        let competition = this.competitions$.value.find(c => c.competitionId === competitionId);
+        if (!competition) competition = await getCompetition(competitionId);
         if (!competition) return;
 
         const days = getDaysTimestampSince(competition.startTime);
@@ -112,7 +123,7 @@ export class DataCenter {
             allSubmissions.filter(s => ts <= s.timestamp && s.timestamp <= ts + ONE_DAY);
         
         const status = await Promise.all(competition.participants.map(async (user) => {
-            const submissions = await this.service.getUserSubmissions(user);
+            const submissions = await this.fetchSubmissions(user);
             const scores = days.map(ts => filterDailySubmissions(ts, submissions)).map(calcDailyScore);
             const totalScore = scores.reduce<number>((prev, cur) => prev + cur, 0);
             return { scores, user, totalScore };
@@ -127,7 +138,7 @@ export class DataCenter {
     }
 
     public async getUserDailyStatus(user: IUser, timestamp: number): Promise<IUserDailyStatus> {
-        const allSubmissions = await this.service.getUserSubmissions(user);
+        const allSubmissions = await this.fetchSubmissions(user);
         const q = allSubmissions
             .filter(s => timestamp <= s.timestamp && s.timestamp <= timestamp + ONE_DAY)
             .map(s => s.titleSlug);

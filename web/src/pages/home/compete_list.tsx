@@ -1,9 +1,9 @@
 import styled from '@emotion/styled';
 import {
-    Card, CardList, Color, DataCenter, HorizontalFlex, ICompetitionInfo, ICompetitionStatus,
-    Scores, useAsyncMemo,
+    Card, CardList, Color, DataCenter, HorizontalFlex, ICompetitionStatus, Scores,
 } from '../../common';
 import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 
 const Days = styled.p`
     margin-left: auto;
@@ -17,33 +17,42 @@ function getDaysLeftWording(daysLeft: number): string {
     return `${daysLeft} Days Left`;
 }
 
-const CompeteListItem: React.FC<ICompetitionInfo> = ({ competitionId }) => {
-    const info = useAsyncMemo<ICompetitionStatus | undefined>(
-        async () => DataCenter.getInstance().getCompetitionStatus(competitionId),
-        undefined,
-    );
-
+const CompeteListItem: React.FC<{ status: ICompetitionStatus }> = ({ status }) => {
     const nav = useNavigate();
 
-    return !info ? null : (
-        <Card onClick={() => nav(`/competition/${info.competitionId}`)}>
+    return !status? null : (
+        <Card onClick={() => nav(`/competition/${status.competitionId}`)}>
             <HorizontalFlex>
-                <Scores status={info} />
-                <Days>{getDaysLeftWording(info.daysLeft)}</Days>
+                <Scores status={status} />
+                <Days>{getDaysLeftWording(status.daysLeft)}</Days>
             </HorizontalFlex>
         </Card>
     );
 }
 
-export interface ICompeteListProps {
-    competeList: ICompetitionInfo[];
-}
 
-export const CompeteList: React.FC<ICompeteListProps> = (props: ICompeteListProps) => (
-    <CardList>
-        <h2>Competitions</h2>
-        {props.competeList.map((info) => (
-            <CompeteListItem key={`compete-list-${info.competitionId}`} {...info} />
-        ))}
-    </CardList>
-);
+export const CompeteList: React.FC = () => {
+    const [competitionStatus, setCompetitionStatus] = useState<ICompetitionStatus[]>([]);
+
+    useEffect(() => {
+        const s$ = DataCenter.getInstance().getCompetitions$();
+        const subscription = s$.subscribe(async (v) => {
+            console.log(v);
+            const status = await Promise.all(
+                v.map(async (c) => await DataCenter.getInstance().getCompetitionStatus(c.competitionId))
+            );
+            setCompetitionStatus(status.filter(s => s) as ICompetitionStatus[]);
+        });
+
+        return () => subscription.unsubscribe();
+    }, []);
+
+    return (
+        <CardList>
+            <h2>Competitions</h2>
+            {competitionStatus.map(status => (
+                <CompeteListItem key={`compete-list-${status.competitionId}`} status={status} />
+            ))}
+        </CardList>
+    );
+}
