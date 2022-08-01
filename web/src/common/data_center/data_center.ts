@@ -1,7 +1,6 @@
 import { getRecentSubmissions, ISubmission } from './services';
 import { ICompetitionInfo, ICompetitionStatus, IUser, IUserDailyStatus } from '../interfaces';
 import { DataService } from './data_service';
-import uniq from 'lodash/uniq';
 import { calcDailyScore, calcDailyStatus, equal, getDaysTimestampSince, getMidNightTimestamp, ONE_DAY, userToString } from '../../utils';
 import { getCompetition, getMyCompetitions, startCompetition } from './services/competition';
 import { BehaviorSubject } from 'rxjs';
@@ -110,9 +109,12 @@ export class DataCenter {
     }
 
     public async getCompetitionStatus(competitionId: string): Promise<ICompetitionStatus | undefined> {
-        let competition = this.competitions$.value.find(c => c.competitionId === competitionId);
-        if (!competition) competition = await getCompetition(competitionId);
-        if (!competition) return;
+        let competition = this.competitions$.value?.find(c => c.competitionId === competitionId);
+        if (!competition) {
+            const temp = await getCompetition(competitionId);
+            if (!temp?.status) return;
+            competition = temp;
+        }
 
         const days = getDaysTimestampSince(competition.startTime);
 
@@ -134,10 +136,16 @@ export class DataCenter {
         };
     }
 
-    public async getUserDailyStatus(user: IUser, timestamp: number): Promise<IUserDailyStatus> {
+    public async getUserSubmissions(user: IUser, startTime?: number, endTime?: number): Promise<ISubmission[]> {
         const allSubmissions = await this.fetchSubmissions(user);
-        const dailySubmissions = allSubmissions
-            .filter(s => timestamp <= s.timestamp && s.timestamp <= timestamp + ONE_DAY);
+        const l = startTime ?? 0;
+        const r = endTime ?? Number.MAX_SAFE_INTEGER;
+        return allSubmissions
+            .filter(s => l <= s.timestamp && s.timestamp <= r);
+    }
+
+    public async getUserDailyStatus(user: IUser, timestamp: number): Promise<IUserDailyStatus> {
+        const dailySubmissions = await this.getUserSubmissions(user, timestamp, timestamp + ONE_DAY);
         return calcDailyStatus(dailySubmissions);
     }
 

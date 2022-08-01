@@ -1,4 +1,3 @@
-import React, { PropsWithChildren } from 'react';
 import styled from '@emotion/styled';
 
 export const Card= styled.div`
@@ -24,14 +23,10 @@ export const Card= styled.div`
 `;
 
 
-const CardListWrapper = styled.div`
+export const CardList = styled.div`
     & > * {
         margin-top: 10px;
     } 
     padding-bottom: 10px;
     width: 100%;
 `;
-
-export const CardList: React.FC<PropsWithChildren> = (props) => (
-    <CardListWrapper>{props.children}</CardListWrapper>
-);

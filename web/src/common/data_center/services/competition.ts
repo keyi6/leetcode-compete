@@ -9,10 +9,10 @@ function formatTime<T extends { startTime: number; endTime: number; }>(obj: T): 
     };
 }
 
-type IStartCompetitionResponse = (ICompetitionInfo & { status: boolean; err?: string })
+type ICompetitionResponse = (ICompetitionInfo & { status: boolean; err?: string })
     | { status: false; err: string };
 
-export async function startCompetition(participants: IUser[]): Promise<IStartCompetitionResponse> {
+export async function startCompetition(participants: IUser[]): Promise<ICompetitionResponse> {
     try {
         const res = await axios.post<ICompetitionInfo & { status: boolean }>('/api/start-competition', {
             participants,
@@ -49,16 +49,22 @@ export async function getMyCompetitions(me: IUser): Promise<ICompetitionInfo[]> 
     }
 }
 
-export async function getCompetition(competitionId: string): Promise<ICompetitionInfo | undefined> {
+export async function getCompetition(competitionId: string): Promise<ICompetitionResponse> {
     try {
-        const res = await axios.post<ICompetitionInfo>('/api/query-competition', {
+        const res = await axios.post<ICompetitionInfo & { status: boolean }>('/api/query-competition', {
             competitionId,
         });
-
         return res.data;
-    } catch (err) {
+    } catch (e) {
+        let err = JSON.stringify(e);
+        if (e instanceof AxiosError) err = e.response?.data?.err || e.message;
+
         console.error(err);
-        return;
+
+        return {
+            status: false,
+            err: err || JSON.stringify(e),
+        };
     }
 }
 

@@ -9,6 +9,7 @@ import { HorizontalFlex, VerticalFlex } from './flex';
 import { Endpoint } from '../common/constants';
 import { checkUser } from '../common/data_center/services';
 import { IUser } from '../common/interfaces';
+import { getLeetcodeUrl } from '../utils';
 
 export interface IUserProps {
     buttonWording?: string;
@@ -19,7 +20,7 @@ export const SearchUser: React.FC<IUserProps> = (props) => {
     const [username, setUsername] = useState<string>('');
     const [endpoint, setEndpoint] = useState<Endpoint>(Endpoint.CN);
     const link = useMemo(
-        () => `https://www.leetcode.${endpoint === Endpoint.CN ? 'cn' : 'com'}/u/${username}`,
+        () => `${getLeetcodeUrl(endpoint)}/u/${username}`,
         [username, endpoint],
     );
     const [loading, setLoading] = useState<boolean>(false);
@@ -65,7 +66,7 @@ export const SearchUser: React.FC<IUserProps> = (props) => {
 
             {err && 
                 <Alert severity="error">
-                    Failed to fetch user info from <Link>{link}</Link>. Please check again. Detail: {err}
+                    Failed to fetch user info from <Link href={link} target="_blank">{link}</Link>. Please check again. Detail: {err}
                 </Alert>
             }
         </VerticalFlex>

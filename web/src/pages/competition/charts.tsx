@@ -1,6 +1,7 @@
 import styled from '@emotion/styled';
 import { useMemo } from 'react';
 import { Color, ICompetitionStatus } from '../../common';
+import { VerticalFlex } from '../../components';
 import { DAILY_LIMIT, getAdjacentDaysTimestamp } from '../../utils';
 
 const WIDTH = 8;
@@ -9,11 +10,15 @@ const HEIGHT = 150;
 const Grid = styled.div`
     margin: 30px 0;
     display: grid;
-    grid-template-columns: repeat(7, 1fr);
+    grid-template-columns: repeat(7, 1fr) 30px;
     grid-template-rows: ${HEIGHT}px 1fr;
 
     * > p {
         margin: 0;
+    }
+
+    * > div {
+        padding-left: 20px;
     }
 `;
 
@@ -33,7 +38,7 @@ const BarSvg = styled.svg`
 `;
 
 const Score = styled.p`
-    color: ${(props: { isWinning: boolean }) => props.isWinning ? Color.GOLD : Color.GOLD_LIGHT };
+    color: ${(props: { isWinning?: boolean }) => props.isWinning ? Color.GOLD : Color.GOLD_LIGHT };
 `;
 
 function calcY(score: number | undefined): number {
@@ -77,9 +82,17 @@ export const Charts: React.FC<IChartsProps> = ({ status }) => {
     return (
         <Grid>
             {days.map(({ timestamp, display, dailyScores }) => (
-                <div key={`chart-${status.competitionId}-${timestamp}`}>
-                    <Bar scores={dailyScores.map(s => s.score)} keyPrefix={timestamp.toString()} />
+                <Bar scores={dailyScores.map(s => s.score)} keyPrefix={timestamp.toString()} 
+                    key={`chart-${status.competitionId}-${timestamp}`} />
+            ))}
 
+            <VerticalFlex style={{ justifyContent: 'space-between' }}>
+                <Score>{DAILY_LIMIT}</Score>
+                <Score>0</Score>
+            </VerticalFlex>
+
+            {days.map(({ timestamp, display, dailyScores }) => (
+                <div key={`score-${status.competitionId}-${timestamp}`}>
                     <p>{display}</p>
 
                     {dailyScores.map(({score, isWinning}, i) => 

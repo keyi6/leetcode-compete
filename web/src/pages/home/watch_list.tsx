@@ -37,7 +37,7 @@ const WatchListItem: React.FC<IUser & { timestamp: number }> = ({ timestamp, ...
 
                 <VerticalFlex style={{ display: `inline-flex`, alignItems: 'flex-start', paddingLeft: 20 }}>
                     <Name>{user.username}</Name>
-                    <Number>{percentage}%</Number>
+                    <Number>{Math.round(count / goal * 100)}%</Number>
                     <Number>{count}/{goal}</Number>
                 </VerticalFlex>
             </HorizontalFlex>

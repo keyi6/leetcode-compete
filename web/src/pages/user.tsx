@@ -4,9 +4,9 @@ import Button from '@mui/material/Button';
 import Alert from '@mui/material/Alert';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Color, DataCenter, Endpoint, IUser, IUserDailyStatus } from '../common';
-import { VerticalFlex, HorizontalFlex, Ring } from '../components';
+import { VerticalFlex, HorizontalFlex, Ring, Submissions } from '../components';
 import { useGuide, useAsyncMemo } from '../hooks';
-import { equal } from '../utils';
+import { equal, ONE_DAY } from '../utils';
 
 const Number = styled.div`
     color: ${Color.RED};
@@ -71,6 +71,8 @@ export const User: React.FC = () => {
                     Failed to compete with user {username}. Detail: {err}
                 </Alert>
             }
+
+            <Submissions user={user} startTime={ts} endTime={ts + ONE_DAY} />
         </VerticalFlex>
     );
 }

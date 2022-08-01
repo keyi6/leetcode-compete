@@ -2,7 +2,7 @@ import uniq from 'lodash/uniq';
 import { Difficulty } from '../common';
 import { ISubmission } from '../common/data_center/services';
 
-export const DAILY_LIMIT = 1000;
+export const DAILY_LIMIT = 800;
 
 export function calcDailyScore(dailySubmissions: ISubmission[]): number {
     return [
