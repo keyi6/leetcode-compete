@@ -1,5 +1,7 @@
 # === build react ===
 FROM node:14-alpine AS builder
+LABEL stage=builder
+
 ENV NODE_ENV production
 WORKDIR /app
 COPY ./web/package.json .

@@ -12,4 +12,10 @@ services:
                 - MONGODB_PASSWORD=$mongodb_password
         ports:
             - "$port:80"
+        volumes:
+            - mongodb:/data/db
 
+
+volumes:
+    mongodb:
+        driver: local
