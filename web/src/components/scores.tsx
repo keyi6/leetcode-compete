@@ -11,17 +11,18 @@ function getLast(arr: number[]): number {
 
 const Name = styled.p`
     margin: 0;
-    font-size: 1.5rem;
+    font-size: 1.4rem;
+    text-overflow: clip;
 `;
 
 const TotalScore = styled.p`
     margin: 10px 0;
-    font-size: 2rem;
+    font-size: 1.5rem;
 `;
 
 const TodayScore = styled.p`
     margin: 0;
-    font-size: 1rem;
+    font-size: 0.8rem;
 `;
 
 export interface IScoresProps {
@@ -29,10 +30,14 @@ export interface IScoresProps {
     fullWidth?: boolean;
 }
 
-const FULL_WIDTH_STYLE: React.CSSProperties = {
-    justifyContent: 'space-between',
-    width: '100%',
-};
+function calcStyle(fullWidth: boolean) {
+    const style = {
+        alignItems: 'flex-end',
+        flexGrow: 1,
+    };
+    if (fullWidth) return { ...style, justifyContent: 'space-between', width: '100%' };
+    return style;
+}
 
 export const Scores: React.FC<IScoresProps> = ({ status, fullWidth = false }) => {
     const info = useMemo(() => (status?.status || []).map(s => ({
@@ -42,14 +47,17 @@ export const Scores: React.FC<IScoresProps> = ({ status, fullWidth = false }) =>
     })), [status]);
 
     return (
-        <HorizontalFlex style={fullWidth ? FULL_WIDTH_STYLE : {}}>
+        <HorizontalFlex style={calcStyle(fullWidth)} >
             {info.map(({ name, todayScore, totalScore, isWinning }) => (
                 <VerticalFlex key={`compete-list-item-${status.competitionId}-${name}`}
-                    style={{ display: 'inline-flex', paddingRight: 20, color: isWinning ? Color.GOLD : Color.GOLD_LIGHT }}
-                >
+                    style={{
+                        display: 'inline-flex',
+                        paddingRight: 20,
+                        color: isWinning ? Color.GOLD : Color.GOLD_LIGHT,
+                    }}>
                     <Name>{name}</Name>
                     <TotalScore>{totalScore.toLocaleString()}PTS</TotalScore>
-                    {todayScore && <TodayScore>{todayScore.toLocaleString()} Today</TodayScore>}
+                    {<TodayScore>{todayScore.toLocaleString()} Today</TodayScore>}
                 </VerticalFlex>
             ))}
         </HorizontalFlex>

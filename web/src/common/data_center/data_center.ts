@@ -4,6 +4,8 @@ import { DataService } from './data_service';
 import { calcDailyScore, calcDailyStatus, equal, getDaysTimestampSince, getMidNightTimestamp, ONE_DAY, userToString } from '../../utils';
 import { getCompetition, getMyCompetitions, startCompetition } from './services/competition';
 import { BehaviorSubject } from 'rxjs';
+import flatten from 'lodash/flatten';
+import uniqWith from 'lodash/uniqWith';
 
 export class DataCenter {
     // singleton implementation 
@@ -25,8 +27,7 @@ export class DataCenter {
 
     private constructor() {
         this.service = new DataService();
-        // this.updateAllUsersSubmissions();
-        this.fetchMyCompetitions();
+        this.initMyCompetitions();
     }
 
     private async fetchSubmissions(user: IUser) {
@@ -47,16 +48,17 @@ export class DataCenter {
         return submissions;
     }
 
-    private async fetchMyCompetitions() {
+    private async initMyCompetitions() {
         const me = await this.getMyUserInfo();
         if (!me) return;
         const competitions = await getMyCompetitions(me);
         this.competitions$.next(competitions);
-    }
 
-    private async updateAllUsersSubmissions() {
+        const users = uniqWith(flatten(competitions.map(c => c.participants)), equal);
         const watchList = await this.service.getWatchList();
-        watchList.forEach(async (user: IUser) => await this.fetchSubmissions(user));
+        const newWatchList = uniqWith([...users, ...watchList], equal);
+        await this.service.setWatchList(newWatchList);
+        newWatchList.forEach(async (user: IUser) => await this.fetchSubmissions(user));
     }
 
     /**

@@ -37,7 +37,7 @@ export const Competition: React.FC = () => {
             <Charts status={status} />
 
             <Tabs value={activeTab} onChange={handleChangeTab} aria-label="basic tabs example">
-                {status.participants.map(u => <Tab label={u.username} />)}
+                {status.participants.map(u => <Tab label={u.username} key={`${status.competitionId}-${u.username}-${u.endpoint}`} />)}
             </Tabs>
 
             <Submissions user={status.participants[activeTab]} startTime={status.startTime} endTime={status.endTime} />

@@ -7,7 +7,8 @@ import { HorizontalFlex, Scores, CardList, Card } from '../../components';
 const Days = styled.p`
     margin-left: auto;
     color: ${Color.GOLD};
-    font-size: 1.1rem;
+    font-size: 1rem;
+    max-width: 60px;
 `;
 
 function getDaysLeftWording(daysLeft: number): string {
