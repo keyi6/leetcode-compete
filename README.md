@@ -1,7 +1,9 @@
 # LeetCode Compete
 LeetCode Compete is a project for you and your friends to compete your leetcode submissions like a competition in apple fitness. It aims to make the preparation for jobs easier and more fun.
+This project also provides a docker image for users who want to private deployment. Check [deploy]('https://github.com/cjhahaha/leetcode-compete#deploy') for instructions.
 
 👉Check out the [demo](https://leetcode-compete.keyi-li.com/).👈
+Learn about rule: [rules](https://leetcode-compete.keyi-li.com/#/rules).
 
 ## deploy
 1. create `.env` file \

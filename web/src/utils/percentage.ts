@@ -6,7 +6,7 @@ export function calcDailyStatus(submissions: ISubmission[]): IUserDailyStatus {
     const l1 = uniq(submissions.map(s => s.titleSlug)).length;
     const p1 = l1 / Goal.TOTAL * 100;
 
-    const l2 = uniq(submissions.filter(s => [Difficulty.EASY, Difficulty.MEDIUM].includes(s.difficulty))
+    const l2 = uniq(submissions.filter(s => [Difficulty.EASY, Difficulty.MEDIUM, null].includes(s.difficulty))
         .map(s => s.titleSlug)).length
     const p2 = l2 / Goal.EASY_AND_MEDIUM * 100;
 
