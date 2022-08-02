@@ -1,4 +1,5 @@
-import { HashRouter, Routes, Route } from 'react-router-dom';
+import { useEffect } from 'react';
+import { HashRouter, Routes, Route, useLocation } from 'react-router-dom';
 import styled from '@emotion/styled';
 import { Add } from './add';
 import { Home } from './home';
@@ -53,6 +54,17 @@ const PAGE_CONFIGS: IPageConfig[] = [
     },
 ];
 
+const ScrollToTop: React.FC = () => {
+    const { pathname } = useLocation();
+
+    useEffect(() => {
+      window.scrollTo(0, 0);
+    }, [pathname]);
+
+    return null;
+};
+
+
 const Main = styled.main`
     width: min(100vw, 600px);
     margin: auto;
@@ -62,6 +74,7 @@ const Main = styled.main`
 export const Router = () => (
     <HashRouter>
         <Main>
+            <ScrollToTop />
             <Routes>
                 {PAGE_CONFIGS.map(({path, element}) => (<Route path={path} element={element} key={`page-${path}`} />))}
             </Routes>
