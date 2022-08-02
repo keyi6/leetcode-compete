@@ -1,6 +1,5 @@
 import uniq from 'lodash/uniq';
-import { Difficulty } from '../common';
-import { ISubmission } from '../common/data_center/services';
+import { Difficulty, ISubmission } from '../common';
 
 export const DAILY_LIMIT = 800;
 

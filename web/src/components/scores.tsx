@@ -1,8 +1,7 @@
-import styled from "@emotion/styled";
-import { useMemo } from "react";
-import { Color } from "../common/constants";
-import { ICompetitionStatus } from "../common/interfaces";
-import { HorizontalFlex, VerticalFlex } from "./flex";
+import styled from '@emotion/styled';
+import { useMemo } from 'react';
+import { ICompetitionStatus, Color } from '../common';
+import { HorizontalFlex, VerticalFlex } from './flex';
 
 function getLast(arr: number[]): number {
     if (arr.length === 0) return 0;

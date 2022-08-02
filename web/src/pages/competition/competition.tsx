@@ -1,8 +1,8 @@
+import React, { useCallback, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import Button from '@mui/material/Button';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
-import React, { useCallback, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
 import { DataCenter, ICompetitionStatus } from '../../common';
 import { VerticalFlex, Scores, Submissions } from '../../components';
 import { useAsyncMemo } from '../../hooks';

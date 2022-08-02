@@ -1,5 +1,5 @@
-import styled from '@emotion/styled';
 import { useMemo } from 'react';
+import styled from '@emotion/styled';
 import { Color, ICompetitionStatus } from '../../common';
 import { VerticalFlex } from '../../components';
 import { DAILY_LIMIT, getAdjacentDaysTimestamp } from '../../utils';

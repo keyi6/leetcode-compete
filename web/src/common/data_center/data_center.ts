@@ -1,11 +1,13 @@
-import { getRecentSubmissions, ISubmission } from './services';
-import { ICompetitionInfo, ICompetitionStatus, IUser, IUserDailyStatus } from '../interfaces';
-import { DataService } from './data_service';
-import { calcDailyScore, calcDailyStatus, equal, getDaysTimestampSince, getMidNightTimestamp, ONE_DAY, userToString } from '../../utils';
-import { getCompetition, getMyCompetitions, startCompetition } from './services/competition';
 import { BehaviorSubject } from 'rxjs';
 import flatten from 'lodash/flatten';
 import uniqWith from 'lodash/uniqWith';
+import {
+    calcDailyScore, calcDailyStatus, equal, getDaysTimestampSince, getMidNightTimestamp, ONE_DAY, userToString,
+} from '../../utils';
+import { ICompetitionInfo, ICompetitionStatus, IUser, IUserDailyStatus } from '../interfaces';
+import { DataService } from './data_service';
+import { ISubmission, getRecentSubmissions } from './services/recent_submissions';
+import { getCompetition, getMyCompetitions, startCompetition } from './services/competition';
 
 export class DataCenter {
     // singleton implementation 

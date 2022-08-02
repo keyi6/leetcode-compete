@@ -1,6 +1,5 @@
 import uniq from 'lodash/uniq';
-import { Difficulty, Goal, IUserDailyStatus } from '../common';
-import { ISubmission } from '../common/data_center/services';
+import { Difficulty, Goal, IUserDailyStatus, ISubmission } from '../common';
 
 export function calcDailyStatus(submissions: ISubmission[]): IUserDailyStatus {
     const l1 = uniq(submissions.map(s => s.titleSlug)).length;

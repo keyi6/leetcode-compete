@@ -1,6 +1,6 @@
+import { Link } from 'react-router-dom';
 import Fab from '@mui/material/Fab';
 import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
-import { Link } from 'react-router-dom';
 
 export const AddUser: React.FC = () => (
     <Link to='/add'>

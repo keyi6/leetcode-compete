@@ -1,7 +1,7 @@
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styled from '@emotion/styled';
 import { Color, DataCenter, ICompetitionStatus } from '../../common';
-import { useNavigate } from 'react-router-dom';
-import { useEffect, useState } from 'react';
 import { HorizontalFlex, Scores, CardList, Card } from '../../components';
 
 const Days = styled.p`

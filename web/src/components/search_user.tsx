@@ -6,9 +6,7 @@ import Link from '@mui/material/Link';
 import LoadingButton from '@mui/lab/LoadingButton';
 import Alert from '@mui/material/Alert';
 import { HorizontalFlex, VerticalFlex } from './flex';
-import { Endpoint } from '../common/constants';
-import { checkUser } from '../common/data_center/services';
-import { IUser } from '../common/interfaces';
+import { Endpoint, IUser, checkUser } from '../common';
 import { getLeetcodeUrl } from '../utils';
 
 export interface IUserProps {

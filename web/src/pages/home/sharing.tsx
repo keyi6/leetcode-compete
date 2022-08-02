@@ -1,9 +1,9 @@
 import React from 'react';
 import { VerticalFlex } from '../../components';
+import { useWatchListData } from '../../hooks';
 import { WatchList } from './watch_list';
 import { CompeteList } from './compete_list';
 import { AddUser } from './add_user';
-import { useWatchListData } from '../../hooks/use_watch_list_data';
 
 export const Sharing: React.FC = () => {
     const { watchList } = useWatchListData();

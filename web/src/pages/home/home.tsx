@@ -1,4 +1,4 @@
-import { useGuide } from '../../hooks/';
+import { useGuide } from '../../hooks';
 import { Sharing } from './sharing';
 
 export const Home: React.FC = () => {
