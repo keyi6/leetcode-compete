@@ -37,7 +37,6 @@ export const CompeteList: React.FC = () => {
     useEffect(() => {
         const s$ = DataCenter.getInstance().getCompetitions$();
         const subscription = s$.subscribe(async (v) => {
-            console.log(v);
             const status = await Promise.all(
                 v.map(async (c) => await DataCenter.getInstance().getCompetitionStatus(c.competitionId))
             );

@@ -1,17 +1,19 @@
 import styled from '@emotion/styled';
+import Button from '@mui/material/Button';
 import Link from '@mui/material/Link';
+import { useNavigate } from 'react-router-dom';
 import { Color, Goal } from '../common';
 import { Ring, VerticalFlex } from '../components';
 import { DAILY_LIMIT } from '../utils';
 
 const Title = styled.h2`
-    color: ${Color.GOLD};
     size: 2rem;
-    margin: 20px 0 0 0;
+    margin: 30px 0 0 0;
 `;
 
 const Bold = styled.b`
-    color: ${Color.GOLD_LIGHT};
+    color: ${Color.GREEN};
+    opacity: 0.8;
 `;
 
 const Line = styled.p`
@@ -19,6 +21,7 @@ const Line = styled.p`
 `;
 
 export const Rules: React.FC = () => {
+    const nav = useNavigate();
     return (
         <VerticalFlex>
             <h1 style={{ marginBottom: 0 }}>Rules</h1>
@@ -31,6 +34,10 @@ export const Rules: React.FC = () => {
                 In the end, the one with the highest score will win.
             </Line>
             <Line>For solving each <Bold>easy/medium/hard</Bold> problem, you can earn <Bold>80/100/200 points</Bold>.</Line>
+            <Line>
+                You can <Bold>start a competition with anyone in the user page</Bold> once you add one in your watch list.
+                The competition link is persistent, therefore you can save the link or <Bold>share it to your opponents</Bold> to check the competition status.
+            </Line>
             <Line>
                 There is no way to refuse a competition from your friend.
                 Once your friend choose to compete with you, this competition status will show on your page as well.
@@ -60,6 +67,8 @@ export const Rules: React.FC = () => {
             <Line>
                 Project source code: <Link href="https://github.com/cjhahaha/leetcode-compete" target="_blank">https://github.com/cjhahaha/leetcode-compete</Link>
             </Line>
+
+            <Button style={{ marginTop: 30 }} onClick={() => nav('/')} variant="contained">GET STARTED</Button>
         </VerticalFlex>
     );
 };
