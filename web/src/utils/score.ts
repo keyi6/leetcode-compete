@@ -6,6 +6,7 @@ export const DAILY_LIMIT = 800;
 
 export function calcDailyScore(dailySubmissions: ISubmission[]): number {
     return [
+        { difficulty: null, score: 80 },
         { difficulty: Difficulty.EASY, score: 80 },
         { difficulty: Difficulty.MEDIUM, score: 100 },
         { difficulty: Difficulty.HARD, score: 200 },

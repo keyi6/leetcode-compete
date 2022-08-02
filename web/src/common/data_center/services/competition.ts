@@ -9,6 +9,15 @@ function formatTime<T extends { startTime: number; endTime: number; }>(obj: T): 
     };
 }
 
+function toLocalTimestamp<T extends { startTime: number; endTime: number; }>(obj: T): T {
+    const d = new Date().getTimezoneOffset() * 60 * 1000;
+    return {
+        ...obj,
+        startTime: obj.startTime + d,
+        endTime: obj.endTime + d,
+    };
+}
+
 type ICompetitionResponse = (ICompetitionInfo & { status: boolean; err?: string })
     | { status: false; err: string };
 
@@ -19,7 +28,7 @@ export async function startCompetition(participants: IUser[]): Promise<ICompetit
         });
 
         return {
-            ...formatTime(res.data),
+            ...toLocalTimestamp(formatTime(res.data)),
             participants,
         }
     } catch (e) {
@@ -42,7 +51,7 @@ export async function getMyCompetitions(me: IUser): Promise<ICompetitionInfo[]> 
             competitions: ICompetitionInfo[];
         }>('/api/query-my-competitions', me);
 
-        return res.data.competitions;
+        return res.data.competitions.map(toLocalTimestamp);
     } catch (err) {
         console.error(err);
         return [];
@@ -54,7 +63,7 @@ export async function getCompetition(competitionId: string): Promise<ICompetitio
         const res = await axios.post<ICompetitionInfo & { status: boolean }>('/api/query-competition', {
             competitionId,
         });
-        return res.data;
+        return toLocalTimestamp(res.data);
     } catch (e) {
         let err = JSON.stringify(e);
         if (e instanceof AxiosError) err = e.response?.data?.err || e.message;
