@@ -8,10 +8,12 @@ export const Guide: React.FC = () => {
     return (
         <VerticalFlex>
             <h1>Welcome to Leetcode-Compete</h1>
-            <Alert severity="warning" style={{ marginBottom: 30 }}>
+            <Alert severity="warning">
                 This page will use localstorage to save data. All it needs is usernames. No password required.
             </Alert>
-            <Button onClick={() => nav('/setup')} variant="contained">Go Setup</Button>
+
+            <Button onClick={() => nav('/setup')} variant="contained" style={{ margin: '30px 0 20px 0'}}>Go Setup</Button>
+            <Button onClick={() => nav('/rules')}>View Rules</Button>
         </VerticalFlex>
     )
 };

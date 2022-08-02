@@ -7,6 +7,7 @@ import { User } from './user';
 import { Competition } from './competition';
 import { Guide } from './guide';
 import { NoMatch } from './no_match';
+import { Rules } from './rules';
 
 interface IPageConfig {
     path: string;
@@ -21,6 +22,10 @@ const PAGE_CONFIGS: IPageConfig[] = [
     {
         path: '/guide',
         element: <Guide />,
+    },
+    {
+        path: '/rules',
+        element: <Rules />,
     },
     // {
     //     path: '/summary',

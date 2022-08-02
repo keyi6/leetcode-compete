@@ -66,6 +66,7 @@ export const User: React.FC = () => {
 
             {isMyself ? null : <Button variant="contained" onClick={handleCompete} disabled={!canCompete}>Compete with {username}</Button>}
             {isMyself ? null : <Button onClick={handleRemove}>Remove {username}</Button>}
+            {isMyself ? null : <Button onClick={() => nav('/rules')}>View Rules</Button>}
 
             {err && 
                 <Alert severity="error">

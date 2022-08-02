@@ -1,7 +1,8 @@
+import Button from '@mui/material/Button';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import React, { useCallback, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { DataCenter, ICompetitionStatus } from '../../common';
 import { VerticalFlex, Scores, Submissions } from '../../components';
 import { useAsyncMemo } from '../../hooks';
@@ -9,6 +10,7 @@ import { Charts } from './charts';
 
 export const Competition: React.FC = () => {
     const { competitionId } = useParams();
+    const nav = useNavigate();
     const status = useAsyncMemo<ICompetitionStatus | undefined | 'loading'>(
         async () => {
             if (!competitionId) return 'loading';
@@ -36,10 +38,11 @@ export const Competition: React.FC = () => {
             <Scores status={status} fullWidth />
             <Charts status={status} />
 
+            <Button style={{ margin: '20px 0' }} variant="contained" onClick={() => nav('/rules')}>View Rules</Button>
+
             <Tabs value={activeTab} onChange={handleChangeTab} aria-label="basic tabs example">
                 {status.participants.map(u => <Tab label={u.username} key={`${status.competitionId}-${u.username}-${u.endpoint}`} />)}
             </Tabs>
-
             <Submissions user={status.participants[activeTab]} startTime={status.startTime} endTime={status.endTime} />
         </VerticalFlex>
     );
