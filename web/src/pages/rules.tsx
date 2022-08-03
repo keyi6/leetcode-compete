@@ -36,7 +36,7 @@ export const Rules: React.FC = () => {
             <Line>For solving each <Bold>easy/medium/hard</Bold> problem, you can earn <Bold>80/100/200 points</Bold>.</Line>
             <Line>
                 You can <Bold>start a competition with anyone in the user page</Bold> once you add one in your watch list.
-                The competition link is persistent, therefore you can save the link or <Bold>share it to your opponents</Bold> to check the competition status.
+                The competition link is persistent, therefore you can <Bold>share the like to your opponents</Bold> to check the competition status.
             </Line>
             <Line>
                 There is no way to refuse a competition from your friend.
@@ -57,6 +57,22 @@ export const Rules: React.FC = () => {
             <Line>
                 The inner ring stands for the <Bold>count of hard problems you solve</Bold>.
                 To get a full ring, you must achieve <Bold>{Goal.HARD}</Bold>.
+            </Line>
+
+            <Title>FAQ</Title>
+            <Line>
+                Q: Dose this project support <Link>leetcode.com</Link> or <Link>leetcode.cn</Link>? <br />
+                A: <Bold>Both endpoints are supported</Bold> in this project. You can choose endpoint when you setup your account or add other user.
+            </Line>
+
+            <Line>
+                Q: How to add my friends? <br/> 
+                A: After setup, click the <Bold>green floating button</Bold> in home page, enter their usernames.
+            </Line>
+
+            <Line>
+                Q: How to start a competition? <br />
+                A: After adding your friend, you can <Bold>go to the user page</Bold> by clicking their name in home page. Then click the green button labeled "COMPETE WITH xxx" to start a competition.
             </Line>
 
             <Title>Contact</Title>

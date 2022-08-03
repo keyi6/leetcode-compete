@@ -6,7 +6,7 @@ import DoneAllIcon from '@mui/icons-material/DoneAll';
 import { Color, DataCenter, Difficulty, ISubmission, IUser } from '../common';
 import { getLeetcodeUrl } from '../utils';
 import { Card, CardList } from './card';
-import { HorizontalFlex } from './flex';
+import { HorizontalFlex, VerticalFlex } from './flex';
 
 export interface ISubmissionProps {
     user: IUser;
@@ -48,12 +48,17 @@ export const Submissions: React.FC<ISubmissionProps> = ({ user, startTime, endTi
             {submissions.map((s, i) => (
                 <Card key={`submission-${s.titleSlug}-${i}`}
                     onClick={() => window.open(`${getLeetcodeUrl(user.endpoint)}/problems/${s.titleSlug}/`)}>
-                    <HorizontalFlex>
+                    <HorizontalFlex style={{ alignItems: 'center' }}>
                         <Circle>
                             {getIcon(s.difficulty)}
                         </Circle>
 
-                        <h4 style={{ flexGrow: 1, margin: 0 }}>{s.title}</h4>
+                        <VerticalFlex>
+                            <h4 style={{ flexGrow: 1, margin: 0 }}>{s.title}</h4>
+                            <p style={{ margin: 0, color: '#666', fontSize: '0.8rem' }}>
+                                Accepted at {new Date(s.timestamp).toLocaleString()}
+                            </p>
+                        </VerticalFlex>
                     </HorizontalFlex>
                 </Card>
             ))}
