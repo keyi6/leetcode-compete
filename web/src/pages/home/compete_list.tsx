@@ -8,7 +8,7 @@ const Days = styled.p`
     margin-left: auto;
     color: ${Color.GOLD};
     font-size: 1rem;
-    max-width: 60px;
+    max-width: max(60px, 16vw);
 `;
 
 function getDaysLeftWording(daysLeft: number): string {
