@@ -3,7 +3,7 @@ import styled from '@emotion/styled';
 import DoneIcon from '@mui/icons-material/Done';
 import DoneOutlineIcon from '@mui/icons-material/DoneOutline';
 import DoneAllIcon from '@mui/icons-material/DoneAll';
-import { Color, DataCenter, Difficulty, IUser, ISubmission } from '../common';
+import { Color, DataCenter, Difficulty, ISubmission, IUser } from '../common';
 import { getLeetcodeUrl } from '../utils';
 import { Card, CardList } from './card';
 import { HorizontalFlex } from './flex';

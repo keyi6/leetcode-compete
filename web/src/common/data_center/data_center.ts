@@ -1,13 +1,11 @@
-import { BehaviorSubject } from 'rxjs';
 import flatten from 'lodash/flatten';
 import uniqWith from 'lodash/uniqWith';
 import {
-    calcDailyScore, calcDailyStatus, equal, getDaysTimestampSince, getMidNightTimestamp, ONE_DAY, userToString,
+    calcDailyScore, calcDailyStatus, equal, getDaysTimestampSince, getMidNightTimestamp, ONE_DAY,
 } from '../../utils';
-import { ICompetitionInfo, ICompetitionStatus, IUser, IUserDailyStatus } from '../interfaces';
-import { DataService } from './data_service';
-import { ISubmission, getRecentSubmissions } from './services/recent_submissions';
-import { getCompetition, getMyCompetitions, startCompetition } from './services/competition';
+import { ICompetitionStatus, ISubmission, IUser, IUserDailyStatus } from '../interfaces';
+import { LocalDataService } from './services/local_data_service';
+import { RemoteDataService } from './services/remote_data_service';
 
 export class DataCenter {
     // singleton implementation 
@@ -21,46 +19,36 @@ export class DataCenter {
     }
 
     // class members and methods
-    /** reading/writing data service instance */
-    private service: DataService;
-    private submissions$: BehaviorSubject<{ [key: string]: ISubmission[] }> = new BehaviorSubject({});
-    private submissionPromise: { [key: string]: Promise<ISubmission[]> } = {};
-    private competitions$: BehaviorSubject<ICompetitionInfo[]> = new BehaviorSubject([] as ICompetitionInfo[]);
+    /** reading/writing data service in local storage */
+    private localData: LocalDataService;
+    private remoteData: RemoteDataService;
 
     private constructor() {
-        this.service = new DataService();
-        this.initMyCompetitions();
+        this.localData = new LocalDataService();
+        this.remoteData = new RemoteDataService();
+
+        const subscription = this.localData.getMyUserInfo$().subscribe(async (me) => {
+            if (!me) return;
+            await this.initMyCompetitions(me);
+            subscription.unsubscribe();
+        });
+
+        // when competitions is updated, add participants into watch list
+        this.remoteData.getCompetitions$().subscribe(async (competitions) => {
+            const users = uniqWith(flatten(competitions.map(c => c.participants)), equal);
+            const wl = uniqWith([...users, ...(this.localData.getWatchList$().value)], equal);
+            this.localData.setWatchList(wl);
+        });
+
+        // when watch list update, update submissions
+        this.localData.getWatchList$()
+            .subscribe(async (wl) => {
+                await Promise.all(wl.map(async (u) => await this.remoteData.getUserSubmissions(u)));
+            });
     }
 
-    private async fetchSubmissions(user: IUser) {
-        const key = userToString(user);
-        const current = this.submissions$.value;
-        if (current[key]) return current[key];
-
-        // if submissions are cached, use cached value
-        const p = this.submissionPromise[key];
-        if (p) return await p;
-        // if already posted a request and it have not came back, then wait for it
-        this.submissionPromise[key] = getRecentSubmissions(user);
-        const submissions = await this.submissionPromise[key];
-        delete this.submissionPromise[key];
-
-        current[key] = submissions;
-        this.submissions$.next(current);
-        return submissions;
-    }
-
-    private async initMyCompetitions() {
-        const me = await this.getMyUserInfo();
-        if (!me) return;
-        const competitions = await getMyCompetitions(me);
-        this.competitions$.next(competitions);
-
-        const users = uniqWith(flatten(competitions.map(c => c.participants)), equal);
-        const watchList = await this.service.getWatchList();
-        const newWatchList = uniqWith([...users, ...watchList], equal);
-        await this.service.setWatchList(newWatchList);
-        newWatchList.forEach(async (user: IUser) => await this.fetchSubmissions(user));
+    private async initMyCompetitions(me: IUser) {
+        await this.remoteData.initCompetitions(me);
     }
 
     /**
@@ -69,24 +57,26 @@ export class DataCenter {
      * @param user
      */
     public async watchUser(user: IUser): Promise<void> {
-        const watchList = await this.service.getWatchList();
-        if (watchList.find(u => equal(u, user))) return;
-
-        await this.fetchSubmissions(user);
-        await this.service.setWatchList([...watchList, user]);
+        this.localData.addToWatchList(user);
     }
 
+    /**
+     * remove user from watch list
+     */
+    public unwatchUser(user: IUser) {
+        this.localData.removeFromWatchList(user);
+    }
+    
+    /**
+     * start a competition with a user
+     * @param user
+     * @returns competitionId
+     */
     public async competeUser(user: IUser): Promise<string> {
-        const me = await this.service.getMyUserInfo();
+        const me = this.localData.getMyUserInfo$().value;
         if (!me) return Promise.reject('No local user info found, must set up first.');
 
-        const participants = [me, user];
-        const res = await startCompetition(participants);
-
-        if (!res.status) return Promise.reject(res.err);
-
-        this.competitions$.next([...this.competitions$.value, res]);
-        await this.fetchSubmissions(user);
+        const res = await this.remoteData.addCompetition([me, user]);
         return res.competitionId;
     }
 
@@ -95,31 +85,29 @@ export class DataCenter {
      * since my user info is private so this info store in local storage
      * @param user
      */
-    public async setMyUserInfo(user: IUser) {
-        await this.fetchSubmissions(user);
-        await this.watchUser(user);
-        await this.service.setMyUserInfo(user);
+    public setMyUserInfo(user: IUser) {
+        this.localData.setMyUserInfo(user);
     }
 
-    public async getMyUserInfo(): Promise<IUser | undefined> {
-        return this.service.getMyUserInfo();
+    public getMyUserInfo$() {
+        return this.localData.getMyUserInfo$().asObservable();
     }
 
-    public async getWatchList(): Promise<IUser[]> {
-        return this.service.getWatchList();
+    public getWatchList$() {
+        return this.localData.getWatchList$().asObservable();
     }
 
     public getCompetitions$() {
-        return this.competitions$;
+        return this.remoteData.getCompetitions$().asObservable();
     }
 
+    /**
+     * calc competition status
+     * @param competitionId
+     */
     public async getCompetitionStatus(competitionId: string): Promise<ICompetitionStatus | undefined> {
-        let competition = this.competitions$.value?.find(c => c.competitionId === competitionId);
-        if (!competition) {
-            const temp = await getCompetition(competitionId);
-            if (!temp?.status) return;
-            competition = temp;
-        }
+        const competition = await this.remoteData.getCompetition(competitionId);
+        if (!competition) return;
 
         const days = getDaysTimestampSince(competition.startTime);
 
@@ -127,22 +115,25 @@ export class DataCenter {
             allSubmissions.filter(s => ts <= s.timestamp && s.timestamp <= ts + ONE_DAY);
         
         const status = await Promise.all(competition.participants.map(async (user) => {
-            const submissions = await this.fetchSubmissions(user);
+            const submissions = await this.remoteData.getUserSubmissions(user);
             const scores = days.map(ts => filterDailySubmissions(ts, submissions)).map(calcDailyScore);
             const totalScore = scores.reduce<number>((prev, cur) => prev + cur, 0);
             return { scores, user, totalScore };
         }));
+
         const maxScore = Math.max(...(status.map(s => s.totalScore)));
-        
         return {
             ...competition,
-            status: status.map(s => ({ ...s, isWinning: s.totalScore === maxScore })),
+            status: status.map(s => ({
+                ...s,
+                isWinning: s.totalScore === maxScore,
+            })),
             daysLeft: 7 - Math.floor((getMidNightTimestamp(Date.now()) - competition.startTime) / ONE_DAY),
         };
     }
 
     public async getUserSubmissions(user: IUser, startTime?: number, endTime?: number): Promise<ISubmission[]> {
-        const allSubmissions = await this.fetchSubmissions(user);
+        const allSubmissions = await this.remoteData.getUserSubmissions(user);
         const l = startTime ?? 0;
         const r = endTime ?? Number.MAX_SAFE_INTEGER;
         return allSubmissions
@@ -152,10 +143,5 @@ export class DataCenter {
     public async getUserDailyStatus(user: IUser, timestamp: number): Promise<IUserDailyStatus> {
         const dailySubmissions = await this.getUserSubmissions(user, timestamp, timestamp + ONE_DAY);
         return calcDailyStatus(dailySubmissions);
-    }
-
-    public async removeUserFromWatchList(user: IUser) {
-        const watchList = (await this.service.getWatchList()).filter(w => !equal(w, user));
-        await this.service.setWatchList(watchList);
     }
 }

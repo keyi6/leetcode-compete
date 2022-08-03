@@ -1,13 +1,6 @@
 import axios from 'axios';
-import { Difficulty } from '../../constants';
-import { IUser } from '../../interfaces';
+import { ISubmission, IUser } from '../../interfaces';
 
-export interface ISubmission {
-    timestamp: number;
-    title: string;
-    titleSlug: string;
-    difficulty: Difficulty;
-}
 
 export async function getRecentSubmissions(user: IUser): Promise<ISubmission[]> {
     try {

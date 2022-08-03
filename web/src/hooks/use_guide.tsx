@@ -6,8 +6,9 @@ export function useGuide() {
     const nav = useNavigate();
 
     useEffect(() => {
-        DataCenter.getInstance().getMyUserInfo().then(user => {
-            if (!user?.username) nav('/guide');
+        const subscription = DataCenter.getInstance().getMyUserInfo$().subscribe(me => {
+            if (!me?.username) nav('/guide');
         });
+        return () => subscription.unsubscribe();
     });
 }

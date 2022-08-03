@@ -5,7 +5,7 @@ import { VerticalFlex, SearchUser } from '../components';
 export const Setup: React.FC = () => {
     const nav = useNavigate();
     const setMyInfo = async (user: IUser) => {
-        await DataCenter.getInstance().setMyUserInfo(user);
+        DataCenter.getInstance().setMyUserInfo(user);
         nav('/');
     };
 

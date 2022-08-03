@@ -1,14 +1,10 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from '@emotion/styled';
 import { Card, CardList, HorizontalFlex, VerticalFlex, Ring } from '../../components';
 import { Color, DataCenter, Goal, IUser, IUserDailyStatus } from '../../common';
 import { useAsyncMemo } from '../../hooks';
 import { getAdjacentDaysTimestamp } from '../../utils';
-
-export interface IWatchListProps {
-    watchList: IUser[];
-}
 
 const Name = styled.p`
     margin: 0;
@@ -45,7 +41,7 @@ const WatchListItem: React.FC<IUser & { timestamp: number }> = ({ timestamp, ...
     )
 };
 
-const DailyWatchList: React.FC<IWatchListProps & { timestamp: number }> = (props) => {
+const DailyWatchList: React.FC<{ watchList: IUser[]; timestamp: number }> = (props) => {
     const title = new Date(props.timestamp).toDateString();
     return (
         <CardList>
@@ -58,12 +54,19 @@ const DailyWatchList: React.FC<IWatchListProps & { timestamp: number }> = (props
     );
 };
 
-export const WatchList: React.FC<IWatchListProps> = (props: IWatchListProps) => {
+export const WatchList: React.FC = () => {
     const past5Days = useMemo<number[]>(() => getAdjacentDaysTimestamp(5, 'past'), []);
+    const [watchList, setWatchList] = useState<IUser[]>([]);
+    useEffect(() => {
+        const subscription = DataCenter.getInstance().getWatchList$().subscribe((wl) => {
+            setWatchList(wl);
+        });
+        return () => subscription.unsubscribe();
+    });
 
     return (
         <>
-            {past5Days.map(ts => <DailyWatchList timestamp={ts} {...props} key={`watch-list-${ts}`} />)}
+            {past5Days.map(ts => <DailyWatchList timestamp={ts} watchList={watchList} key={`watch-list-${ts}`} />)}
         </>
     );
 };

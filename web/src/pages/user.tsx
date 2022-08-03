@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import styled from '@emotion/styled';
 import Button from '@mui/material/Button';
@@ -16,10 +16,10 @@ export const User: React.FC = () => {
     useGuide();
 
     const { endpoint, username, timestamp } = useParams();
-    const user: IUser = {
+    const user = useMemo<IUser>(() => ({
         username: username || '',
         endpoint: endpoint as Endpoint || Endpoint.CN,
-    };
+    }), [username, endpoint])
     const ts: number = timestamp ? parseInt(timestamp) : 0; 
 
     const { count, percentage, goal } = useAsyncMemo<IUserDailyStatus>(
@@ -28,10 +28,12 @@ export const User: React.FC = () => {
         [endpoint, username],
     );
 
-    const isMyself = useAsyncMemo(
-        async () => DataCenter.getInstance().getMyUserInfo().then(me => me && equal(me, user)),
-        false,
-    );
+    const [isMyself, setIsMyself] = useState<boolean>(false);
+    useEffect(() => {
+        const subscription = DataCenter.getInstance().getMyUserInfo$()
+            .subscribe(me => setIsMyself(equal(me, user)));
+        return () => subscription.unsubscribe();
+    }, [user]);
 
     const [canCompete, setCanCompete] = useState<boolean>(true);
 
@@ -50,7 +52,7 @@ export const User: React.FC = () => {
     };
 
     const handleRemove = async () => {
-        await DataCenter.getInstance().removeUserFromWatchList(user);
+        await DataCenter.getInstance().unwatchUser(user);
         nav('/');
     }
 
