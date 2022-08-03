@@ -1,5 +1,6 @@
 import flatten from 'lodash/flatten';
 import uniqWith from 'lodash/uniqWith';
+import { debounceTime } from 'rxjs';
 import {
     calcDailyScore, calcDailyStatus, equal, getDaysTimestampSince, getMidNightTimestamp, ONE_DAY,
 } from '../../utils';
@@ -27,21 +28,25 @@ export class DataCenter {
         this.localData = new LocalDataService();
         this.remoteData = new RemoteDataService();
 
-        const subscription = this.localData.getMyUserInfo$().subscribe(async (me) => {
-            if (!me) return;
-            await this.initMyCompetitions(me);
-            subscription.unsubscribe();
-        });
+        const subscription = this.localData.getMyUserInfo$()
+            .subscribe(async (me) => {
+                if (!me) return;
+                await this.initMyCompetitions(me);
+                subscription.unsubscribe();
+            });
 
         // when competitions is updated, add participants into watch list
-        this.remoteData.getCompetitions$().subscribe(async (competitions) => {
-            const users = uniqWith(flatten(competitions.map(c => c.participants)), equal);
-            const wl = uniqWith([...users, ...(this.localData.getWatchList$().value)], equal);
-            this.localData.setWatchList(wl);
-        });
+        this.remoteData.getCompetitions$()
+            .pipe(debounceTime(100))
+            .subscribe(async (competitions) => {
+                const users = uniqWith(flatten(competitions.map(c => c.participants)), equal);
+                const wl = uniqWith([...users, ...(this.localData.getWatchList$().value)], equal);
+                this.localData.setWatchList(wl);
+            });
 
         // when watch list update, update submissions
         this.localData.getWatchList$()
+            .pipe(debounceTime(100))
             .subscribe(async (wl) => {
                 await Promise.all(wl.map(async (u) => await this.remoteData.getUserSubmissions(u)));
             });
