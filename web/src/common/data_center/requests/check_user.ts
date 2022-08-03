@@ -1,5 +1,8 @@
 import axios, { AxiosError } from 'axios';
 import { IUser } from '../../interfaces';
+import axiosRetry from 'axios-retry';
+
+axiosRetry(axios, { retries: 3 });
 
 export async function checkUser(user: IUser): Promise<void> {
     try {

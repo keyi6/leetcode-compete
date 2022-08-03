@@ -1,5 +1,8 @@
 import axios, { AxiosError } from 'axios';
+import axiosRetry from 'axios-retry';
 import { ICompetitionInfo, IUser } from '../../interfaces';
+
+axiosRetry(axios, { retries: 3 });
 
 function formatTime<T extends { startTime: number; endTime: number; }>(obj: T): T {
     return {

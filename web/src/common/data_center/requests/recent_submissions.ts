@@ -1,5 +1,8 @@
 import axios from 'axios';
+import axiosRetry from 'axios-retry';
 import { ISubmission, IUser } from '../../interfaces';
+
+axiosRetry(axios, { retries: 3 });
 
 
 export async function getRecentSubmissions(user: IUser): Promise<ISubmission[]> {
