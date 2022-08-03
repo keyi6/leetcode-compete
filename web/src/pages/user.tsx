@@ -4,7 +4,7 @@ import styled from '@emotion/styled';
 import Button from '@mui/material/Button';
 import Alert from '@mui/material/Alert';
 import { Color, DataCenter, Endpoint, IUser, IUserDailyStatus } from '../common';
-import { VerticalFlex, HorizontalFlex, Ring, Submissions } from '../components';
+import { VerticalFlex, HorizontalFlex, Rings, Submissions } from '../components';
 import { useGuide, useAsyncMemo } from '../hooks';
 import { equal, ONE_DAY } from '../utils';
 
@@ -61,7 +61,7 @@ export const User: React.FC = () => {
             <h1 style={{ margin: 0 }}>{username}</h1>
 
             <HorizontalFlex style={{ gap: 20, alignItems: 'flex-start' }}>
-                <Ring percentage={percentage} size={200} />
+                <Rings percentage={percentage} size={200} />
                 <p>{new Date(ts).toDateString()}</p>
             </HorizontalFlex>
             <h3>submissions: <Number>{count}/{goal}</Number></h3>

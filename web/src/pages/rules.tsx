@@ -3,7 +3,7 @@ import Button from '@mui/material/Button';
 import Link from '@mui/material/Link';
 import { useNavigate } from 'react-router-dom';
 import { Color, Goal } from '../common';
-import { Ring, VerticalFlex } from '../components';
+import { Rings, VerticalFlex } from '../components';
 import { DAILY_LIMIT } from '../utils';
 
 const Title = styled.h2`
@@ -45,7 +45,7 @@ export const Rules: React.FC = () => {
 
             <Title>Ring</Title>
             <Line>Just like the ring on Apple Watch, this ring indicates how your are doing in Leetcode on a daily basis.</Line>
-            <Ring percentage={[100, 100, 100]} size={100}></Ring>
+            <Rings percentage={[100, 100, 100]} size={100} />
             <Line>
                 The outer ring stands for the <Bold>total accepted submissions count</Bold> you made.
                 To get a full ring, you must achieve <Bold>{Goal.TOTAL}</Bold>.

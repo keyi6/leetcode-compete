@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from '@emotion/styled';
-import { Card, CardList, HorizontalFlex, VerticalFlex, Ring } from '../../components';
+import { Card, CardList, HorizontalFlex, VerticalFlex, Rings } from '../../components';
 import { Color, DataCenter, Goal, IUser, IUserDailyStatus } from '../../common';
 import { useAsyncMemo } from '../../hooks';
 import { getAdjacentDaysTimestamp } from '../../utils';
@@ -29,7 +29,7 @@ const WatchListItem: React.FC<IUser & { timestamp: number }> = ({ timestamp, ...
             nav(`/user/${encodeURIComponent(user.username)}/${encodeURIComponent(user.endpoint)}/${timestamp}`);
         }}>
             <HorizontalFlex>
-                <Ring percentage={percentage} />
+                <Rings percentage={percentage} />
 
                 <VerticalFlex style={{ display: `inline-flex`, alignItems: 'flex-start', paddingLeft: 20 }}>
                     <Name>{user.username}</Name>

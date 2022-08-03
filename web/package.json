@@ -13,6 +13,8 @@
     "@types/rx": "^4.1.2",
     "axios": "^0.27.2",
     "axios-retry": "^3.3.1",
+    "d3": "^7.6.1",
+    "d3-array": "^3.2.0",
     "lodash": "^4.17.21",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -47,6 +49,7 @@
     ]
   },
   "devDependencies": {
+    "@types/d3": "^7.4.0",
     "@types/lodash": "^4.14.182",
     "@types/react": "^18.0.15",
     "@types/react-dom": "^18.0.6",
