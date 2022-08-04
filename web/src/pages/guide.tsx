@@ -13,7 +13,7 @@ export const Guide: React.FC = () => {
             </Alert>
 
             <Button onClick={() => nav('/setup')} variant="contained" style={{ margin: '30px 0 20px 0'}}>Go Setup</Button>
-            <Button onClick={() => nav('/rules')}>View Rules</Button>
+            <Button onClick={() => nav('/rules')} variant="outlined">View Rules</Button>
         </VerticalFlex>
     )
 };

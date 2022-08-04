@@ -193,6 +193,7 @@ export const Rings: React.FC<IRingsProps> = ({ size = 72, percentage }) => {
                     angle={angles[index]}
                     radius={innerRadius + (strokeWidth + ringSpacing) * (2 - index)}
                     strokeWidth={strokeWidth}
+                    key={`ring-${color}`}
                 />
             ))}
         </svg>
