@@ -35,7 +35,7 @@ export const User: React.FC = () => {
     );
 
     const [isMyself, setIsMyself] = useState<boolean>(false);
-    const [canCompete, setCanCompete] = useState<boolean>(true);
+    const [ongoingCompetitionId, setOngoingCompetitionId] = useState<string | undefined>();
     useEffect(() => {
         const subscription = combineLatest([
             DataCenter.getInstance().getMyUserInfo$(),
@@ -44,7 +44,7 @@ export const User: React.FC = () => {
             if (!me) return;
 
             setIsMyself(equal(me, user));
-            setCanCompete(!competitions.find(c => isInCompetition([user, me], c)));
+            setOngoingCompetitionId(competitions.find(c => isInCompetition([user, me], c))?.competitionId);
         });
         return () => subscription.unsubscribe();
     }, [user]);
@@ -60,7 +60,6 @@ export const User: React.FC = () => {
             if (typeof(err) === 'string') setErr(err);
             else setErr(JSON.stringify(err));
         }
-        setCanCompete(false);
     };
 
     const handleRemove = () => {
@@ -78,7 +77,10 @@ export const User: React.FC = () => {
             </HorizontalFlex>
             <h3>submissions: <Number>{count}/{goal}</Number></h3>
 
-            {isMyself ? null : <Button variant="contained" onClick={handleCompete} disabled={!canCompete}>Compete with {username}</Button>}
+            {isMyself ? null : (ongoingCompetitionId
+                ? <Button variant="contained" onClick={() => nav(`/competition/${ongoingCompetitionId}`)}>Check competition status</Button>
+                : <Button variant="contained" onClick={handleCompete}>Compete with {username}</Button>
+            )}
             {err && 
                 <Alert severity="error">
                     Failed to compete with user {username}. Detail: {err}

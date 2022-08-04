@@ -1,5 +1,4 @@
 import styled from '@emotion/styled';
-import { Color } from '../common';
 
 export const Card= styled.div`
     background-color: #212121;

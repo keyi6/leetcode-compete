@@ -47,8 +47,8 @@ export class DataCenter {
         // when watch list update, update submissions
         this.localData.getWatchList$()
             .pipe(debounceTime(100))
-            .subscribe(async (wl) => {
-                await Promise.all(wl.map(async (u) => await this.remoteData.getUserSubmissions(u)));
+            .subscribe((wl) => {
+                wl.map((u) => this.remoteData.getUserSubmissions(u));
             });
     }
 

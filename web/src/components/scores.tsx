@@ -53,6 +53,7 @@ export const Scores: React.FC<IScoresProps> = ({ status, fullWidth = false }) =>
                         display: 'inline-flex',
                         paddingRight: 20,
                         color: isWinning ? Color.GOLD : Color.GOLD_LIGHT,
+                        width: 'calc((min(100vw, 600px) - 80px - min(60px, 16vw)) / 2)',
                     }}>
                     <Name>{name}</Name>
                     <TotalScore>{totalScore.toLocaleString()}PTS</TotalScore>

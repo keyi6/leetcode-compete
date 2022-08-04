@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import isEqual from 'lodash/isEqual';
+import uniqWith from 'lodash/uniqWith';
 import styled from '@emotion/styled';
 import { Color, DataCenter, ICompetitionStatus } from '../../common';
 import { HorizontalFlex, Scores, CardList, Card } from '../../components';
@@ -37,10 +39,10 @@ export const CompeteList: React.FC = () => {
     useEffect(() => {
         const s$ = DataCenter.getInstance().getCompetitions$();
         const subscription = s$.subscribe(async (v) => {
-            const status = await Promise.all(
-                v.map(async (c) => await DataCenter.getInstance().getCompetitionStatus(c.competitionId))
-            );
-            setCompetitionStatus(status.filter(s => s) as ICompetitionStatus[]);
+            await Promise.all(v.map(async (c) => {
+                const status = await DataCenter.getInstance().getCompetitionStatus(c.competitionId);
+                if (status) setCompetitionStatus(prev => (uniqWith([...prev, status], isEqual)));
+            }));
         });
 
         return () => subscription.unsubscribe();
