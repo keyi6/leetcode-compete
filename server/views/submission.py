@@ -37,7 +37,7 @@ def query_recent_submissions():
             need_update = False
 
     if need_update:
-        collection.create_index('expireAt', expireAfterSeconds=0)
+        collection.create_index('expireAt', expireAfterSeconds=86400)
 
         for s in [{ **s, 'expireAt': s['timestamp'] + SEVEN_DAYS} for s in get_recent_submissions(username, endpoint)]:
             collection.update_one({ 'id': s['id'] }, { '$set': { **s, 'updatedTime': datetime.now() } }, upsert=True)
