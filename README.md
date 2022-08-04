@@ -1,10 +1,16 @@
 # LeetCode Compete
-LeetCode Compete is a project for you and your friends to compete your leetcode submissions like a competition in apple fitness. It aims to make the preparation for jobs easier and more fun.
-This project also provides a docker image for users who want to private deployment. Check [deploy]('https://github.com/cjhahaha/leetcode-compete#deploy') for instructions.
 
-👉Check out the [demo](https://leetcode-compete.keyi-li.com/).👈
-Learn about rule: [rules](https://leetcode-compete.keyi-li.com/#/rules).
+<p align="center">
+    <img src="web/public/favicon.ico" alt="leetcode-compete logo" style="max-width: 100%;">
+</p>
 
+LeetCode Compete is a project for you and your friends to compete your leetcode submissions like a competition in apple fitness. It aims to make the preparation for jobs easier and more fun. <br />
+For more information, learn about [rules](https://leetcode-compete.keyi-li.com/#/rules). <br />
+
+This project also provides a docker image for users who want to private deployment. Check [deploy](#deploy) for instructions. <br />
+
+
+👉Check out the [demo](https://leetcode-compete.keyi-li.com/).👈 
 ## deploy
 1. create `.env` file \
 \* replace `{VAR}` with stuff that that you like.
@@ -45,6 +51,8 @@ Open [http://localhost:{PORT}](http://localhost:{PORT}) in your browser to get s
 
 ## todo
 There are a lot of work going on.
-- [ ] i10n
-- [ ] cronjob update leetcode information
 - [ ] persistent competition result
+    - [ ] create scheduled trigger to compute result every midnight
+    - [ ] medallion art
+- [ ] cronjob update leetcode information
+- [ ] i10n (if needed)
