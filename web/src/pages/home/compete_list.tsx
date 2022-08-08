@@ -14,7 +14,8 @@ const Days = styled.p`
 `;
 
 function getDaysLeftWording(daysLeft: number): string {
-    if (daysLeft <= 0) return 'Ending Today';
+    if (daysLeft < 1) return 'Ended'; 
+    if (daysLeft === 1) return 'Ending Today';
     if (daysLeft > 7) return 'Starting Tomorrow';
     return `${daysLeft} Days Left`;
 }

@@ -10,13 +10,13 @@ function getLast(arr: number[]): number {
 
 const Name = styled.p`
     margin: 0;
-    font-size: 1.4rem;
+    font-size: 1em;
     text-overflow: clip;
 `;
 
 const TotalScore = styled.p`
     margin: 10px 0;
-    font-size: 1.5rem;
+    font-size: 1.4rem;
 `;
 
 const TodayScore = styled.p`
