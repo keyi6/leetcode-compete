@@ -7,7 +7,7 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import Alert from '@mui/material/Alert';
 import { HorizontalFlex, VerticalFlex } from './flex';
 import { Endpoint, IUser, checkUser } from '../common';
-import { getLeetcodeUrl } from '../utils';
+import { getLeetcodeUrl, getUserUrl } from '../utils';
 
 export interface IUserProps {
     buttonWording?: string;
@@ -16,9 +16,9 @@ export interface IUserProps {
 
 export const SearchUser: React.FC<IUserProps> = (props) => {
     const [username, setUsername] = useState<string>('');
-    const [endpoint, setEndpoint] = useState<Endpoint>(Endpoint.CN);
+    const [endpoint, setEndpoint] = useState<Endpoint>(Endpoint.US);
     const link = useMemo(
-        () => `${getLeetcodeUrl(endpoint)}/u/${username}`,
+        () => getUserUrl(endpoint, username),
         [username, endpoint],
     );
     const [loading, setLoading] = useState<boolean>(false);
@@ -46,8 +46,8 @@ export const SearchUser: React.FC<IUserProps> = (props) => {
 
                 <Select id="endpoint-select" label="Endpoint" variant="standard"
                     value={endpoint} onChange={(e) => setEndpoint(e.target.value as Endpoint)}>
-                    <MenuItem value={Endpoint.CN}>leetcode.cn</MenuItem>
                     <MenuItem value={Endpoint.US}>leetcode.com</MenuItem>
+                    <MenuItem value={Endpoint.CN}>leetcode.cn</MenuItem>
                 </Select>
             </HorizontalFlex>
 
